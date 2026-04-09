@@ -320,6 +320,14 @@ NextRound:
     jmp GameLoop
 
 DoFrame:
+    ; --- Vérifier si la touche ESC est pressée pour quitter ---
+    lda KEYBD
+    cmp #$9B            ; Code pour la touche ESC ($1B | $80)
+    bne SkipQuit
+    jmp QuitGame
+SkipQuit:
+    ; ---------------------------------------------------------
+
     inc FRAME
 
     ; --- 0. BASCULER SUR LA PAGE CACHEE ---
@@ -1611,6 +1619,18 @@ EndBlink:
     pla
     sta PAGE_OFF    ; Restaurer la page vidéo d'origine
     rts
+
+QuitGame:
+    sta KBDSTRB         ; Réinitialise le strobe du clavier pour éviter une boucle
+
+    ; --- Restaurer le mode texte standard ---
+    sta $C051           ; Active le mode texte (contre $C050 pour graphiques)
+    sta $C053           ; Désactive le mode plein écran (contre $C052)
+    jsr $FCA8           ; Routine ROM pour effacer l'écran (HOME)
+
+    ; --- Retour propre au BASIC de DOS 3.3 ---
+    jmp $3D0            ; Effectue un "Warm Start" de DOS 3.3
+
 
 Delay:
     lda SPEED

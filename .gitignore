@@ -1,0 +1,23 @@
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Build artifacts
+*.bin
+
+# Backups and Temporary files
+*.bak
+*.png
+sprite_output.txt
+.DS_Store
+
+# Large or external disk images
+*.do
+MASTER_NEW.DSK
+MASTER.DSK.bak
+*.bak
+
+# Others
+package-lock.json
