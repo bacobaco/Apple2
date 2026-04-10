@@ -87,13 +87,28 @@ def tokenize_line(text):
             continue
 
         # Try to match a keyword (longest match first)
-        upper_rest = text[i:].upper()
+        # Applesoft ignores spaces during tokenization.
         matched = False
+        upper_text = text.upper()
         for kw in sorted(KEYWORD_TO_TOKEN.keys(), key=len, reverse=True):
-            if upper_rest.startswith(kw):
+            # Check if text[i:] starts with kw, ignoring spaces in between
+            kw_idx = 0
+            text_idx = i
+            while kw_idx < len(kw) and text_idx < len(text):
+                if text[text_idx].isspace():
+                    text_idx += 1
+                    continue
+                if upper_text[text_idx] == kw[kw_idx]:
+                    text_idx += 1
+                    kw_idx += 1
+                else:
+                    break
+            
+            if kw_idx == len(kw):
+                # Found a match!
                 token = KEYWORD_TO_TOKEN[kw]
                 result.append(token)
-                i += len(kw)
+                i = text_idx
                 matched = True
                 if kw == "REM":
                     in_rem = True
@@ -468,9 +483,37 @@ def main():
         file_data = struct.pack('<HH', load_addr, len(raw_data)) + raw_data
         file_type = 0x04  # Binary (B)
     else:
-        with open(in_path, 'r') as f:
-            basic_text = f.read()
-        program_data = tokenize_program(basic_text)
+        # Check if the file is already tokenized BASIC or plain text
+        is_tokenized = False
+        try:
+            with open(in_path, 'rb') as f:
+                header = f.read(1024)
+            if len(header) >= 4:
+                # Tokenized files always have null bytes (end of line) and 
+                # a pointer to the next line at the start.
+                if b'\x00' in header:
+                    next_ptr = struct.unpack('<H', header[0:2])[0]
+                    # Heuristic: next_ptr usually points to $08xx or higher for Applesoft
+                    if 0x0801 <= next_ptr < 0x9600:
+                        is_tokenized = True
+        except Exception:
+            pass
+
+        if is_tokenized:
+            print(f"  Detected tokenized Applesoft BASIC file.")
+            with open(in_path, 'rb') as f:
+                program_data = f.read()
+        else:
+            print(f"  Processing as text Applesoft BASIC file...")
+            try:
+                with open(in_path, 'r', encoding='utf-8-sig') as f:
+                    basic_text = f.read()
+            except UnicodeDecodeError:
+                # Fallback for non-UTF8 text (high-ASCII, etc.)
+                with open(in_path, 'r', encoding='latin-1') as f:
+                    basic_text = f.read()
+            program_data = tokenize_program(basic_text)
+            
         file_data = struct.pack('<H', len(program_data)) + program_data
         file_type = 0x02  # Applesoft (A)
 

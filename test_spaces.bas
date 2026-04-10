@@ -1,0 +1,3 @@
+10 H COL OR = 3
+20 PR INT "HELLO"
+30 END
