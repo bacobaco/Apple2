@@ -1,0 +1,33 @@
+=====================================================
+              INSTALLATION DE DCMOTO
+=====================================================
+
+Principe:
+--------
+Pour éviter la détection de faux positifs par les
+antivirus le fichier .exe est scindé en deux parties.
+Chacune des deux parties est contenue dans un fichier
+.dat. Le fichier .exe est reconstitue en concaténant
+ces deux fichiers.
+
+Procédure:
+---------
+- Décompressez le fichier .zip dans un dossier de
+  votre choix.
+- Allez dans le sous-dossier correspondant à
+  l'architecture de votre système :
+  . dcmoto-32 pour une architecture 32 bits.
+  . dcmoto-64 pour une architecture 64 bits.
+- Lancez le fichier install.bat (double-clic).
+- Le fichier .exe de dcmoto est créé, vous pouvez
+  lancer son exécution.
+- Les fichiers .dat et .bat ne sont plus utiles,
+  vous pouvez les supprimer.
+
+Cas particuliers:
+----------------
+Si votre système Linux ou MacOS ne permet pas
+d'exécuter le fichier .bat, vous pouvez utiliser
+n'importe quel autre outil pour concaténer
+(en binaire) les deux fichiers .dat et donner au
+fichier résultant l'extension .exe. 

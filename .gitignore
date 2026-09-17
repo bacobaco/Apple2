@@ -1,0 +1,37 @@
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+*$py.class
+python
+
+# Build artifacts
+*.bin
+a.out
+*.out
+*.o
+
+# Scratch and test files
+scratch/
+sprite_output.txt
+
+# Media and temporary audio
+*.wav
+*.mp3
+*.png
+
+# Backups and temporary files
+*.bak
+.DS_Store
+
+# Large or external disk images
+*.do
+TEST.DSK
+gaag.dsk
+FLAPPY.DSK
+MASTER_NEW.DSK
+*.bak
+
+# Others
+package-lock.json
+.vscode/
