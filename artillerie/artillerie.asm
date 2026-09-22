@@ -43,15 +43,31 @@ NewGame:
     STA P2_SCORE_HI
     STA P2_HIT_COUNT
     
+    ; Initialisation des réglages par défaut équitables
+    LDA #45
+    STA ANGLE
+    STA CPU_ANGLE
+    LDA #100
+    STA POWER
+    STA CPU_POWER
+    
 NewRound:
     LDA #0
     STA SHOT_COUNT
     STA P1_SHOT_COUNT
     STA P2_SHOT_COUNT
-    STA IS_CPU_TURN
     STA P1_BUF1_LEN
     STA P2_BUF1_LEN
     STA SELF_HIT
+    
+    ; --- ÉQUILIBRAGE : Alternance de l'initiative ---
+    ; Manche 1, 3, 5 : Joueur 1 commence (IS_CPU_TURN = 0)
+    ; Manche 2, 4    : Joueur 2 / CPU commence (IS_CPU_TURN = 1)
+    LDA ROUND_NUM
+    AND #1
+    EOR #1
+    STA IS_CPU_TURN
+    
     JSR GetRandomCanonX
     JSR GetRandomTargetX
     JSR GenerateWind
@@ -60,7 +76,11 @@ NewRound:
     LDA RANDOM_SEED+1
     STA STAR_SEED+1
     
-    ; Initialisation des variables de tir CPU
+    ; --- ÉQUILIBRAGE : Ne pas écraser les réglages de J2 en mode PvP ! ---
+    LDA GAME_MODE
+    BNE +               ; Si mode 2 Joueurs, J2 conserve ses réglages !
+    
+    ; Initialisation des variables de tir CPU uniquement en mode PvE
     ; Angle aléatoire entre 40 et 55 degrés
     LDA RANDOM_SEED
     AND #15
@@ -74,6 +94,7 @@ NewRound:
     CLC
     ADC #70
     STA CPU_POWER
++   
     
     JSR HGR_ROM         ; Efface l'écran et passe en mode mixte
     JSR GenerateTerrain
@@ -147,7 +168,8 @@ PrintResult:
     JSR PrintString
     JSR Delay2Seconds
     
-    ; Passe le tour à l'ordinateur/J2
+    ; Passe le tour à l'ordinateur/J2 avec vent dynamique
+    JSR UpdateWindTurn
     LDA #1
     STA IS_CPU_TURN
     JMP RoundLoop
@@ -161,6 +183,7 @@ P1SelfHit:
     STA $07
     JSR PrintString
     JSR Delay2Seconds
+    JSR UpdateWindTurn
     LDA #1
     STA IS_CPU_TURN
     JMP RoundLoop
@@ -202,6 +225,7 @@ MsgCPUMissed:
 PrintCPUResult:
     JSR PrintString
     JSR Delay2Seconds
+    JSR UpdateWindTurn
     LDA #0
     STA IS_CPU_TURN     ; Retour au joueur
     JMP RoundLoop
@@ -215,6 +239,7 @@ CPUSelfHit:
     STA $07
     JSR PrintString
     JSR Delay2Seconds
+    JSR UpdateWindTurn
     LDA #0
     STA IS_CPU_TURN
     JMP RoundLoop
@@ -736,13 +761,13 @@ WaitTerrain:
     JMP WaitTerrain
 
 SetPlaine:
-    LDA #6
+    LDA #12
     STA AMP1
-    LDA #5
+    LDA #9
     STA AMP2
-    LDA #4
+    LDA #7
     STA AMP3
-    LDA #3
+    LDA #5
     STA AMP4
     RTS
 
@@ -940,8 +965,39 @@ _check_x_limit
     BEQ _gen_done
     JMP LoopTerrain
 _gen_done
+    JSR AddCentralMound
     JSR FlattenPlatforms
     JSR DrawTerrain
+    RTS
+
+AddCentralMound:
+    ; Ajoute une butte centrale entre X=105 et X=161 pour briser la ligne de vue directe
+    LDX #105
+_mound_loop:
+    TXA
+    SEC
+    SBC #133            ; A = X - 133
+    BPL +
+    EOR #$FF
+    CLC
+    ADC #1              ; A = |X - 133| (0 à 28)
++   STA TEMP
+    LDA #28
+    SEC
+    SBC TEMP            ; 28 - |X - 133| (de 0 sur les bords à 28 au centre)
+    LSR A               ; 0 à 14 pixels d'élévation
+    STA TEMP            ; Hauteur à soustraire (Y vers le haut)
+    
+    LDA TERRAIN_Y,X
+    SEC
+    SBC TEMP
+    CMP #40             ; Ne pas dépasser le plafond HGR de 40
+    BCS +
+    LDA #40
++   STA TERRAIN_Y,X
+    INX
+    CPX #162
+    BNE _mound_loop
     RTS
 
 FlattenPlatforms:
@@ -2005,6 +2061,7 @@ MsgP2Missed:
 PrintP2Result:
     JSR PrintString
     JSR Delay2Seconds
+    JSR UpdateWindTurn
     LDA #0
     STA IS_CPU_TURN     ; Retour à J1
     JMP RoundLoop
@@ -2018,6 +2075,7 @@ P2SelfHit:
     STA $07
     JSR PrintString
     JSR Delay2Seconds
+    JSR UpdateWindTurn
     LDA #0
     STA IS_CPU_TURN     ; Retour à J1
     JMP RoundLoop
@@ -3061,6 +3119,47 @@ _wind_save
     STX WIND_ACC+2
     RTS
 
+UpdateWindTurn:
+    ; Variation dynamique du vent : petite rafale entre chaque tir
+    ; Tirage du delta : -2, -1, 0, +1, ou +2
+    LDA RANDOM_SEED
+    AND #7              ; 0 à 7
+    SEC
+    SBC #3              ; -3 à +4
+    ; Borner delta à -2..+2
+    CMP #$FE            ; Si < -2 (i.e. -3)
+    BPL +
+    LDA #$FE            ; -2
++   CMP #3              ; Si >= 3 (i.e. +3, +4)
+    BMI +
+    LDA #2              ; +2
++   ; Ajouter le delta au vent actuel
+    CLC
+    ADC WIND_VAL
+    
+    ; Borner le nouveau vent entre -5 et +5
+    CMP #$FB            ; < -5 ?
+    BPL _uwind_ge_m5
+    LDA #$FB            ; -5
+    JMP _uwind_save
+_uwind_ge_m5:
+    CMP #6
+    BCC _uwind_save
+    LDA #5
+_uwind_save:
+    STA WIND_VAL
+    
+    ; Reconstruire WIND_ACC (24-bit signé point-fixe)
+    ASL A
+    STA WIND_ACC
+    LDX #0
+    TAY
+    BPL +
+    LDX #$FF
++   STX WIND_ACC+1
+    STX WIND_ACC+2
+    RTS
+
 PrintScore:
     LDA SCORE_LO
     LDY SCORE_HI
@@ -3149,11 +3248,11 @@ DelayL2:
 GetRandomTargetX:
     LDA RANDOM_SEED
 -   SEC
-    SBC #80
+    SBC #75
     BCS -
-    ADC #80
+    ADC #75
     CLC
-    ADC #180
+    ADC #185
     STA CIBLE_X
     LDA #0
     ADC #0
@@ -3163,11 +3262,11 @@ GetRandomTargetX:
 GetRandomCanonX:
     LDA RANDOM_SEED+1
 -   SEC
-    SBC #40
+    SBC #60
     BCS -
-    ADC #40
+    ADC #60
     CLC
-    ADC #30
+    ADC #20
     STA CANON_X
     RTS
 
@@ -4427,7 +4526,7 @@ MSG_P_PUISS     .text " PUISS: ", 0
 
 MSG_HELP_LINE   .text "[ESPACE] TIR  [A/Z] PUISS ", 0
 MSG_COPYRIGHT   .text "(C) BACO 2026", 0
-MSG_VERSION     .text "VERSION 2.2", 0
+MSG_VERSION     .text "VERSION 2.3", 0
 
 MSG_SELF_HIT     .text "AUTO-DESTRUCTION !", 0
 MSG_P2_SELF_HIT  .text "J2 S'EST AUTO-DETRUIT !", 0

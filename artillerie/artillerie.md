@@ -104,3 +104,17 @@ Lorsqu'un obus heurte la montagne, la routine `DigCrater` lit une table de demi-
   - Nouveau son d'impact de terre pour les tirs manqués (`PlayExplosionSound`) à pitch descendant.
 - **Affichage de Version** :
   - Ajout du label `VERSION 2.2` en bas à gauche de l'écran titre et de l'écran de choix du relief, en regard du copyright `(C) BACO 2026`.
+
+### Version 2.3 (Équilibrage Compétitif & Physique du Vent Dynamique)
+- **Alternance de l'Initiative par Manche** :
+  - Fin du monopole du tir d'ouverture par J1 : le premier tireur alterne désormais à chaque manche (Manches 1, 3, 5 = J1 commence ; Manches 2, 4 = J2 / CPU commence).
+- **Équité des Réglages en Duel (PvP)** :
+  - En mode 2 Joueurs, les réglages d'angle et de force de J2 ne sont plus réinitialisés aléatoirement par le RNG au début de chaque manche. J2 conserve désormais ses réglages mémorisés de façon symétrique à J1.
+- **Vent Dynamique au Tour par Tour (Rafales Réalistes)** :
+  - La routine `UpdateWindTurn` applique une fluctuation continue du vent ($\pm 2$) après chaque tir. Les joueurs doivent réadapter leur tir en temps réel en observant l'indicateur de vent mis à jour sur le HUD.
+- **Rehaussement Tactique du Relief "Plaine"** :
+  - Amplitudes sinusoïdales augmentées (`AMP1=12`, `AMP2=9`, `AMP3=7`, `AMP4=5`).
+  - Ajout de la routine `AddCentralMound` créant une butte centrale fluide ($X \in [105, 161]$) entre les deux belligérants pour bannir les tirs directs horizontaux et forcer des tirs en cloche.
+- **Dispersion Accrue des Chars** :
+  - Élargissement des plages de spawn : J1 dans $[20, 79]$ et J2 dans $[185, 259]$, offrant une variation de distance de 106 à 239 pixels.
+
