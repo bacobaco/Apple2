@@ -14,6 +14,7 @@ echo       Binaire genere : 1000bornes.bin
 
 echo.
 echo [2/2] Injection dans AI-ASM.DSK...
+python ..\bas2dsk.py 1000bornes.bin ..\AI-ASM.DSK "BORNES" 4000
 python ..\bas2dsk.py 1000bornes.bin ..\AI-ASM.DSK "1000BORNES" 4000
 if %ERRORLEVEL% NEQ 0 (
     echo [ATTENTION] Impossible d'injecter dans AI-ASM.DSK

@@ -508,8 +508,8 @@ SlotRows:
     .byte 72, 72, 72, 72
     ; Piles joueur (scanline 148)
     .byte 148, 148
-    ; Defausse centrale (scanline 122)
-    .byte 122
+    ; Defausse centrale (scanline 128)
+    .byte 128
     ; Piles Thomson (scanline 148)
     .byte 148, 148
 
@@ -1285,46 +1285,31 @@ DrawBoardHGR:
     sta MENU_SEL
     jsr DrawMenuDraw
 
-    ; 2. Noms et libelles du jeu
-    ; Joueur (Panneau Magenta) : Cartouche blanc de 8 caracteres
-    lda #$7F
+    ; 2. Plaques de bordure pilote et ordinateur (scanlines 114..142)
+    ; Joueur : Colonne 2, Panneau Magenta ($55)
+    lda #2
+    sta CARD_COL
+    lda #$55
     sta INV_FLAG
-    lda #1
-    sta HGR_COL
-    lda #14
-    sta HGR_ROW
-    lda #<StrBlank8
-    sta STR_LO
-    lda #>StrBlank8
-    sta STR_HI
-    jsr HGR_PrintString
-
-    lda #1
-    sta HGR_COL
-    lda #14
-    sta HGR_ROW
     lda #<PLAYER_NAME
     sta STR_LO
     lda #>PLAYER_NAME
     sta STR_HI
-    jsr HGR_PrintString
+    jsr DrawDashboardPlaque
 
-    ; Thomson (Panneau Orange) : Cartouche blanc de 8 caracteres
-    lda #$7F
+    ; Thomson : Colonne 26, Panneau Orange ($AA)
+    lda #26
+    sta CARD_COL
+    lda #$AA
     sta INV_FLAG
-    lda #25
-    sta HGR_COL
-    lda #14
-    sta HGR_ROW
     lda #<StrThomsonPlate
     sta STR_LO
     lda #>StrThomsonPlate
     sta STR_HI
-    jsr HGR_PrintString
+    jsr DrawDashboardPlaque
 
-    ; Les scores sont affiches dynamiquement sous la forme [XXX] KMS par UpdateScoresAndDrawCount
-
-    ; Defausse et Pioche (Centre vert)
+    ; 3. Terrain central : Defausse et Pioche (Centre vert, cols 16..23)
+    ; Header DEFAUSSE a la ligne 15 (scanlines 120..127)
     lda #$2A
     sta INV_FLAG
     lda #16
@@ -1337,6 +1322,16 @@ DrawBoardHGR:
     sta STR_HI
     jsr HGR_PrintString
 
+    ; Cadre de l'emplacement vide de defausse (Slot 18, scanlines 128..167)
+    lda #18
+    sta SLOT_NUM
+    lda #CARD_EMPTY_SLOT
+    sta CARD_ID
+    jsr DrawCardInSlot
+
+    ; Libelle "RESTE" a la ligne 21 (scanlines 168..175)
+    lda #$2A
+    sta INV_FLAG
     lda #16
     sta HGR_COL
     lda #21
@@ -1347,9 +1342,12 @@ DrawBoardHGR:
     sta STR_HI
     jsr HGR_PrintString
 
-    lda #17
+    ; Libelle "CARTES" a la ligne 23 (scanlines 184..191)
+    lda #$2A
+    sta INV_FLAG
+    lda #16
     sta HGR_COL
-    lda #22
+    lda #23
     sta HGR_ROW
     lda #<StrCartesLabel
     sta STR_LO
@@ -1360,8 +1358,164 @@ DrawBoardHGR:
     lda #0
     sta INV_FLAG
 
-    ; 3. Compteurs de kilometres et talon
+    ; 4. Compteurs de kilometres et talon
     jsr UpdateScoresAndDrawCount
+    rts
+
+; =============================================================================
+; DrawDashboardPlaque : Trace une plaque de bordure elegante avec nom de pilote
+; Entrees :
+;   CARD_COL = Colonne de base (2 pour Joueur, 26 pour Thomson)
+;   INV_FLAG = $55 (Joueur, bit 7=0) ou $AA (Thomson, bit 7=1)
+;   STR_LO/STR_HI = Pointeur vers chaine du nom
+; =============================================================================
+DrawDashboardPlaque:
+    ; 1. Trace le fond blanc et les bordures noires (scanlines 114..142)
+    ldx #114
+_ddp_y_loop:
+    lda HGR_ROW_LO,x
+    clc
+    adc CARD_COL
+    sta PTR2_LO
+    lda HGR_ROW_HI,x
+    adc #0
+    sta PTR2_HI
+
+    ; Determine octet de bordure ($00 ou $80) et octet de fond ($7F ou $FF)
+    lda #$00
+    ldy INV_FLAG
+    cpy #$AA
+    bne +
+    lda #$80
++   sta TEMP_A
+
+    lda #$7F
+    ldy INV_FLAG
+    cpy #$AA
+    bne +
+    lda #$FF
++   sta ERASE_B1
+
+    ; Lignes pleines de bordure / filet
+    cpx #114
+    beq _ddp_full_line
+    cpx #142
+    beq _ddp_full_line
+    cpx #125
+    beq _ddp_full_line
+
+    ; Ligne normale : col 0=bordure, cols 1..10=fond blanc, col 11=bordure
+    ldy #0
+    lda TEMP_A
+    sta (PTR2_LO),y
+    lda ERASE_B1
+    iny
+-   sta (PTR2_LO),y
+    iny
+    cpy #11
+    bne -
+    lda TEMP_A
+    sta (PTR2_LO),y
+    jmp _ddp_next_line
+
+_ddp_full_line:
+    ldy #0
+    lda TEMP_A
+-   sta (PTR2_LO),y
+    iny
+    cpy #12
+    bne -
+
+_ddp_next_line:
+    inx
+    cpx #143
+    bne _ddp_y_loop
+
+    ; 2. Trace du nom centre dans la moitie superieure (scanlines 116..123)
+    ldy #0
+-   lda (STR_LO),y
+    beq +
+    iny
+    cpy #10
+    bcc -
++   sty TEMP_X
+    lda TEMP_X
+    beq _ddp_done
+
+    ; Colonne de depart = CARD_COL + 1 + (10 - TEMP_X) / 2
+    lda #10
+    sec
+    sbc TEMP_X
+    lsr
+    clc
+    adc CARD_COL
+    adc #1
+    sta TEMP_Y
+
+    ldy #0
+_ddp_char_loop:
+    lda (STR_LO),y
+    beq _ddp_done
+    and #$7F
+    sta TEMP_A
+    tya
+    pha
+
+    lda #0
+    sta PTR_HI
+    lda TEMP_A
+    asl
+    rol PTR_HI
+    asl
+    rol PTR_HI
+    asl
+    rol PTR_HI
+    clc
+    adc #<FONT_7X8
+    sta PTR_LO
+    lda PTR_HI
+    adc #>FONT_7X8
+    sta PTR_HI
+
+    lda #0
+    sta CHAR_Y
+_ddp_glyph_loop:
+    lda CHAR_Y
+    clc
+    adc #116
+    tay
+    lda HGR_ROW_LO,y
+    clc
+    adc TEMP_Y
+    sta PTR2_LO
+    lda HGR_ROW_HI,y
+    adc #0
+    sta PTR2_HI
+
+    ldy CHAR_Y
+    lda (PTR_LO),y
+    eor #$7F
+    and #$7F
+    ldy INV_FLAG
+    cpy #$AA
+    bne +
+    ora #$80
++   ldy #0
+    sta (PTR2_LO),y
+
+    inc CHAR_Y
+    lda CHAR_Y
+    cmp #8
+    bne _ddp_glyph_loop
+
+    inc TEMP_Y
+    pla
+    tay
+    iny
+    cpy TEMP_X
+    bne _ddp_char_loop
+
+_ddp_done:
     rts
 
 UpdateScoresAndDrawCount:
@@ -1383,7 +1537,7 @@ UpdateScoresAndDrawCount:
     sta NUM_HI
     jsr DrawScoreKMS
 
-    ; Reste de cartes au talon (Col 21, 2 chiffres, y=168, fond vert $2A)
+    ; Reste de cartes au talon centre a la ligne 22
     jsr DrawTalonDigits
 
     lda #0
@@ -1391,66 +1545,52 @@ UpdateScoresAndDrawCount:
     rts
 
 ; =============================================================================
-; DrawScoreKMS : Affiche dynamiquement "[Score] KMS" centre sur le panneau
+; DrawScoreKMS : Affiche dynamiquement "[Score] KMS" centre dans la plaque
 ; Entrees :
 ;   NUM_LO/NUM_HI : Valeur en kms (0..1000)
-;   INV_FLAG      : $55 (Joueur, cols 0..15) ou $AA (Thomson, cols 24..39)
-; Efface prealablement la zone de score puis trace les 5..8 grands caracteres
+;   INV_FLAG      : $55 (Joueur, cols 2..13) ou $AA (Thomson, cols 26..37)
 ; =============================================================================
 DrawScoreKMS:
     jsr Bin2Dec         ; DEC_BUF contient 5 chiffres ASCII
 
-    ; 1. Effacement complet de la bande de score (scanlines 122..135)
-    lda INV_FLAG
-    cmp #$55
-    bne _dsk_wipe_thomson
+    ; 1. Base col : 2 si $55, 26 si $AA
+    lda #2
+    ldy INV_FLAG
+    cpy #$AA
+    bne +
+    lda #26
++   sta CARD_COL
 
-    ; Joueur : efface colonnes 2..13 (12 colonnes, y=122..135)
-    ldx #122
-_dsk_wipe_p_y:
+    ; 2. Efface la zone de score (cols base+1..base+10, scanlines 126..141)
+    lda #$7F
+    ldy INV_FLAG
+    cpy #$AA
+    bne +
+    lda #$FF
++   sta TEMP_A
+
+    ldx #126
+_dsk_clr_y:
     lda HGR_ROW_LO,x
+    clc
+    adc CARD_COL
+    adc #1
     sta PTR2_LO
     lda HGR_ROW_HI,x
+    adc #0
     sta PTR2_HI
-    ldy #2
-_dsk_wipe_p_x:
-    lda #$55            ; Col 2 pair = $55
-    sta (PTR2_LO),y
+    ldy #0
+    lda TEMP_A
+-   sta (PTR2_LO),y
     iny
-    lda #$2A            ; Col 3 impair = $2A
-    sta (PTR2_LO),y
-    iny
-    cpy #14
-    bne _dsk_wipe_p_x
+    cpy #10
+    bne -
     inx
-    cpx #136
-    bne _dsk_wipe_p_y
-    jmp _dsk_build_str
+    cpx #142
+    bne _dsk_clr_y
 
-_dsk_wipe_thomson:
-    ; Thomson : efface colonnes 26..37 (12 colonnes, y=122..135)
-    ldx #122
-_dsk_wipe_t_y:
-    lda HGR_ROW_LO,x
-    sta PTR2_LO
-    lda HGR_ROW_HI,x
-    sta PTR2_HI
-    ldy #26
-_dsk_wipe_t_x:
-    lda #$AA            ; Col 26 pair = $AA
-    sta (PTR2_LO),y
-    iny
-    lda #$D5            ; Col 27 impair = $D5
-    sta (PTR2_LO),y
-    iny
-    cpy #38
-    bne _dsk_wipe_t_x
-    inx
-    cpx #136
-    bne _dsk_wipe_t_y
-
+    ; 3. Construction de la chaine sans zeros non significatifs
 _dsk_build_str:
-    ; 2. Construction de la chaine sans zeros non significatifs
     lda DEC_BUF+1       ; Milliers
     cmp #'0'
     beq _dsk_chk_hun
@@ -1517,7 +1657,7 @@ _dsk_chk_unit:
 
 _dsk_add_suffix:
     ldx ScoreNumDigits
-    lda #$FF            ; Espace inter-mots (1 colonne vide)
+    lda #13             ; 13 = Espace
     sta ScoreCharIndices,x
     inx
     lda #10             ; 'K'
@@ -1531,27 +1671,24 @@ _dsk_add_suffix:
     inx
     stx ScoreTotalLen   ; 5, 6, 7 ou 8 colonnes
 
-    ; 3. Centrage horizontal dans la zone de 16 colonnes
-    ; StartCol = Base + (16 - ScoreTotalLen) / 2
-    lda #16
+    ; 4. Centrage horizontal dans les 10 colonnes blanches
+    lda #10
     sec
     sbc ScoreTotalLen
     lsr                 ; / 2
-    ldy INV_FLAG
-    cpy #$AA
-    bne +
     clc
-    adc #24             ; Base Thomson = 24
-+   sta CARD_COL        ; Colonne de depart
+    adc CARD_COL
+    adc #1
+    sta CARD_COL
 
-    ; 4. Trace des caracteres
+    ; 5. Trace des caracteres
     lda #0
     sta STR_IDX
 _dsk_col_loop:
     ldx STR_IDX
     lda ScoreCharIndices,x
-    cmp #$FF
-    beq _dsk_skip_col   ; Espace : deja vierge grace au wipe
+    cmp #13
+    beq _dsk_skip_col   ; Espace deja blanc
     tax
     lda LargeDigitOffsets,x
     tax
@@ -1560,7 +1697,7 @@ _dsk_col_loop:
     lda #0
     sta CHAR_Y
 _dsk_scan_loop:
-    lda #122
+    lda #128            ; Scanlines 128..137 (hauteur 10)
     clc
     adc CHAR_Y
     tax
@@ -1584,7 +1721,7 @@ _dsk_scan_loop:
 
     inc CHAR_Y
     lda CHAR_Y
-    cmp #14
+    cmp #10
     bne _dsk_scan_loop
 
 _dsk_skip_col:
@@ -1607,17 +1744,47 @@ DrawTalonDigits:
     sta NUM_HI
     jsr Bin2Dec
 
-    ; Efface Col 21 en vert pour separer proprement 'reste' du chiffre
+    ; Efface Col 18..21 en vert ($2A / $55) a la scanline 176..183
+    lda #18
+    sta CARD_COL
+    jsr _erase_talon_digit_col
+    lda #19
+    sta CARD_COL
+    jsr _erase_talon_digit_col
+    lda #20
+    sta CARD_COL
+    jsr _erase_talon_digit_col
     lda #21
     sta CARD_COL
     jsr _erase_talon_digit_col
 
-    lda #22
+    ; Verifie si >= 100 cartes
+    lda DEC_BUF+2
+    cmp #'0'
+    beq _dtd_two_digits
+
+    ; 3 chiffres : cols 18, 19, 20
+    lda #18
+    sta CARD_COL
+    lda DEC_BUF+2
+    jsr _draw_one_talon_digit
+    lda #19
     sta CARD_COL
     lda DEC_BUF+3
     jsr _draw_one_talon_digit
+    lda #20
+    sta CARD_COL
+    lda DEC_BUF+4
+    jsr _draw_one_talon_digit
+    rts
 
-    lda #23
+_dtd_two_digits:
+    ; 2 chiffres : centres aux colonnes 19 et 20
+    lda #19
+    sta CARD_COL
+    lda DEC_BUF+3
+    jsr _draw_one_talon_digit
+    lda #20
     sta CARD_COL
     lda DEC_BUF+4
     jsr _draw_one_talon_digit
@@ -1626,7 +1793,7 @@ DrawTalonDigits:
 _erase_talon_digit_col:
     lda #0
     sta CHAR_Y
--   lda #168
+-   lda #176
     clc
     adc CHAR_Y
     tax
@@ -1662,7 +1829,7 @@ _draw_one_talon_digit:
     lda #0
     sta CHAR_Y
 _dtd_scan_loop:
-    lda #168
+    lda #176
     clc
     adc CHAR_Y
     tax
@@ -1701,57 +1868,59 @@ _dtd_scan_loop:
     rts
 
 LargeDigitOffsets:
-    .byte 0, 14, 28, 42, 56, 70, 84, 98, 112, 126, 140, 154, 168
+    .byte 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130
 
 LargeDigitsTable:
     ; 0 (Offset 0)
-    .byte $3E, $3E, $36, $36, $36, $36, $36, $36, $36, $36, $36, $36, $3E, $3E
-    ; 1 (Offset 14)
-    .byte $0C, $1C, $18, $18, $18, $18, $18, $18, $18, $18, $18, $18, $3E, $3E
-    ; 2 (Offset 28)
-    .byte $3E, $3E, $30, $30, $30, $30, $3E, $3E, $06, $06, $06, $06, $3E, $3E
-    ; 3 (Offset 42)
-    .byte $3E, $3E, $30, $30, $30, $30, $3E, $3E, $30, $30, $30, $30, $3E, $3E
-    ; 4 (Offset 56)
-    .byte $36, $36, $36, $36, $36, $36, $3E, $3E, $30, $30, $30, $30, $30, $30
-    ; 5 (Offset 70)
-    .byte $3E, $3E, $06, $06, $06, $06, $3E, $3E, $30, $30, $30, $30, $3E, $3E
-    ; 6 (Offset 84)
-    .byte $3E, $3E, $06, $06, $06, $06, $3E, $3E, $36, $36, $36, $36, $3E, $3E
-    ; 7 (Offset 98)
-    .byte $3E, $3E, $30, $30, $30, $30, $30, $30, $30, $30, $30, $30, $30, $30
-    ; 8 (Offset 112)
-    .byte $3E, $3E, $36, $36, $36, $36, $3E, $3E, $36, $36, $36, $36, $3E, $3E
-    ; 9 (Offset 126)
-    .byte $3E, $3E, $36, $36, $36, $36, $3E, $3E, $30, $30, $30, $30, $3E, $3E
-    ; 10: 'K' (Offset 140)
-    .byte $36, $36, $1E, $1E, $0E, $0E, $0E, $0E, $1E, $1E, $36, $36, $36, $36
-    ; 11: 'M' (Offset 154)
-    .byte $36, $36, $3E, $3E, $1C, $1C, $0C, $0C, $36, $36, $36, $36, $36, $36
-    ; 12: 'S' (Offset 168)
-    .byte $3E, $3E, $06, $06, $06, $06, $3E, $3E, $30, $30, $30, $30, $3E, $3E
+    .byte $40, $40, $4C, $4C, $4C, $4C, $4C, $4C, $40, $40
+    ; 1 (Offset 10)
+    .byte $73, $71, $73, $73, $73, $73, $73, $73, $40, $40
+    ; 2 (Offset 20)
+    .byte $40, $40, $4F, $4F, $40, $40, $7C, $7C, $40, $40
+    ; 3 (Offset 30)
+    .byte $40, $40, $4F, $4F, $40, $40, $4F, $4F, $40, $40
+    ; 4 (Offset 40)
+    .byte $4C, $4C, $4C, $4C, $40, $40, $4F, $4F, $4F, $4F
+    ; 5 (Offset 50)
+    .byte $40, $40, $7C, $7C, $40, $40, $4F, $4F, $40, $40
+    ; 6 (Offset 60)
+    .byte $40, $40, $7C, $7C, $40, $40, $4C, $4C, $40, $40
+    ; 7 (Offset 70)
+    .byte $40, $40, $4F, $4F, $4F, $4F, $4F, $4F, $4F, $4F
+    ; 8 (Offset 80)
+    .byte $40, $40, $4C, $4C, $40, $40, $4C, $4C, $40, $40
+    ; 9 (Offset 90)
+    .byte $40, $40, $4C, $4C, $40, $40, $4F, $4F, $40, $40
+    ; 10: 'K' (Offset 100)
+    .byte $4C, $4C, $60, $60, $70, $70, $60, $60, $4C, $4C
+    ; 11: 'M' (Offset 110)
+    .byte $4C, $40, $40, $4C, $4C, $4C, $4C, $4C, $4C, $4C
+    ; 12: 'S' (Offset 120)
+    .byte $40, $40, $7C, $7C, $40, $40, $4F, $4F, $40, $40
+    ; 13: Espace (Offset 130)
+    .byte $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F
 
 TalonDigitsTable:
     ; 0
-    .byte $3F, $33, $33, $33, $33, $33, $33, $3F
+    .byte $3F, $33, $33, $33, $33, $33, $3F, $00
     ; 1
-    .byte $0C, $3C, $30, $30, $30, $30, $30, $3F
+    .byte $0C, $0E, $0C, $0C, $0C, $0C, $1E, $00
     ; 2
-    .byte $3F, $30, $30, $3F, $03, $03, $03, $3F
+    .byte $3F, $30, $30, $3F, $03, $03, $3F, $00
     ; 3
-    .byte $3F, $30, $30, $3F, $30, $30, $30, $3F
+    .byte $3F, $30, $30, $3F, $30, $30, $3F, $00
     ; 4
-    .byte $33, $33, $33, $3F, $30, $30, $30, $30
+    .byte $33, $33, $33, $3F, $30, $30, $30, $00
     ; 5
-    .byte $3F, $03, $03, $3F, $30, $30, $30, $3F
+    .byte $3F, $03, $03, $3F, $30, $30, $3F, $00
     ; 6
-    .byte $3F, $03, $03, $3F, $33, $33, $33, $3F
+    .byte $3F, $03, $03, $3F, $33, $33, $3F, $00
     ; 7
-    .byte $3F, $30, $30, $30, $30, $30, $30, $30
+    .byte $3F, $30, $30, $30, $30, $30, $30, $00
     ; 8
-    .byte $3F, $33, $33, $3F, $33, $33, $33, $3F
+    .byte $3F, $33, $33, $3F, $33, $33, $3F, $00
     ; 9
-    .byte $3F, $33, $33, $3F, $30, $30, $30, $3F
+    .byte $3F, $33, $33, $3F, $30, $30, $3F, $00
 
 ; =============================================================================
 ; GESTION DES MENUS DE LA BARRE SUPERIEURE (LIGNE 0)
@@ -1987,11 +2156,11 @@ StrBlank4:          .text "    ", 0
 StrBlank2:          .text "  ", 0
 StrBlank3:          .text "   ", 0
 StrBlank8:          .text "        ", 0
-StrThomsonPlate:    .text " THOMSON", 0
+StrThomsonPlate:    .text "THOMSON", 0
 StrKmsLabel:        .text "kms :", 0
-StrDefausse:        .text "defausse", 0
-StrResteLabel:      .text "reste ", 0
-StrCartesLabel:     .text "cartes", 0
+StrDefausse:        .text "DEFAUSSE", 0
+StrResteLabel:      .text " RESTE  ", 0
+StrCartesLabel:     .text " CARTES ", 0
 
 StrMenuDraw0:       .text ">TIRER UNE CARTE<  COUP-FOURRE  ABANDON", 0
 StrMenuDraw1:       .text " TIRER UNE CARTE >COUP-FOURRE<  ABANDON", 0
@@ -2022,8 +2191,12 @@ PlayRound:
 
     sta P_BATTLE
     sta T_BATTLE
+    sta P_BATTLE_UNDER
+    sta T_BATTLE_UNDER
     sta P_LIMIT
     sta T_LIMIT
+    sta P_LIMIT_UNDER
+    sta T_LIMIT_UNDER
     sta P_STARTED
     sta T_STARTED
     sta DISCARD_TOP
@@ -2564,7 +2737,52 @@ _no_cf_possible:
 _do_cf_execute:
     stx CF_HAND_IDX
     sta PLAY_CARD
-    jsr ApplyPlayerCard
+    ; 1. Active la botte dans P_BOTTES
+    sec
+    sbc #CARD_CITERNE   ; 0..3
+    tax
+    lda #1
+    sta P_BOTTES,x
+    cpx #3              ; Vehicule Prioritaire ?
+    bne +
+    sta P_STARTED
++
+    lda P_BOTTE_COUNT
+    cmp #4
+    bcs +
+    clc
+    adc #8
+    sta SLOT_NUM
+    inc P_BOTTE_COUNT
+    lda PLAY_CARD
+    sta CARD_ID
+    jsr DrawCardInSlot
+    jsr BeepSound
++
+    ; 2. Bonus Coup-Fourre (+300) et depart d'office avec Feu Vert officiel
+    inc P_CF_COUNT
+    lda #1
+    sta P_STARTED
+    lda #CARD_FEUVERT
+    sta P_BATTLE
+    sta P_BATTLE_UNDER
+    lda #17
+    sta SLOT_NUM
+    lda #CARD_FEUVERT
+    sta CARD_ID
+    jsr DrawCardInSlot
+
+    ; Si Coup-Fourre Vehicule Prioritaire sur Limitation :
+    lda PLAY_CARD
+    cmp #CARD_VEHPRIO
+    bne +
+    lda #0
+    sta P_LIMIT
+    sta P_LIMIT_UNDER
+    lda #16
+    sta SLOT_NUM
+    jsr EraseSlot
++
     ldx CF_HAND_IDX
     stx CURSOR_POS
     jsr RemovePlayedCard
@@ -2772,13 +2990,13 @@ _check_rem_self:
     sec
     sbc #5
     cmp P_BATTLE
-    bne _illegal_move_exit
+    bne _to_illegal_move
     sec
     rts
 
 _check_green_self:
     lda P_BOTTES+3
-    bne _illegal_move_exit
+    bne _to_illegal_move
     lda P_BATTLE
     beq _legal_move_exit
     cmp #CARD_FEUROUGE
@@ -2795,18 +3013,28 @@ _check_green_self:
 _check_endlim_self:
     lda P_LIMIT
     cmp #CARD_LIMITATION
-    bne _illegal_move_exit
+    bne _to_illegal_move
     sec
     rts
 
 _check_dist_200:
     lda P_200_COUNT
     cmp #2
-    bcs _illegal_move_exit
+    bcs _to_illegal_move
     jmp _check_dist_standard
 
 _check_dist_standard:
-    lda P_BOTTES+3
+    lda P_BATTLE
+    cmp #CARD_PANNE
+    beq _illegal_move_exit
+    cmp #CARD_ACCIDENT
+    beq _illegal_move_exit
+    cmp #CARD_CREVAISON
+    beq _illegal_move_exit
+    cmp #CARD_FEUROUGE
+    beq _illegal_move_exit
+
+    lda P_BOTTES+3      ; Vehicule Prioritaire ?
     bne _check_speed_limit
     lda P_BATTLE
     cmp #CARD_FEUVERT
@@ -2857,7 +3085,9 @@ _legal_move_exit:
 ApplyPlayerCard:
     lda PLAY_CARD
     cmp #CARD_CITERNE
-    bcc _not_player_botte
+    bcs _is_player_botte
+    jmp _not_player_botte
+_is_player_botte:
 
     sec
     sbc #CARD_CITERNE   ; 0..3
@@ -2880,24 +3110,60 @@ ApplyPlayerCard:
     jsr DrawCardInSlot
     jsr BeepSound
 _p_skip_botte_draw:
+    ; Effet de la botte posee a son tour normal (PAS un coup-fourre !)
+    lda PLAY_CARD
+    cmp #CARD_VEHPRIO
+    bne _p_chk_hazard_botte
 
-    txa
-    clc
-    adc #1
-    cmp P_BATTLE
-    bne _no_p_cf
-    inc P_CF_COUNT
-    lda #1
-    sta P_STARTED
-    lda #CARD_FEUVERT
+    ; --- VEHICULE PRIORITAIRE DU JOUEUR ---
+    ; 1. Annule la Limitation :
+    lda P_LIMIT_UNDER
+    sta P_LIMIT
+    lda #16
+    sta SLOT_NUM
+    lda P_LIMIT
+    beq _p_erase_lim
+    sta CARD_ID
+    jsr DrawCardInSlot
+    jmp _p_prio_battle
+_p_erase_lim:
+    jsr EraseSlot
+
+_p_prio_battle:
+    ; 2. Si Feu Rouge, annule le Feu Rouge et restaure la carte precedente :
+    lda P_BATTLE
+    cmp #CARD_FEUROUGE
+    bne _p_finish_botte_play
+    lda P_BATTLE_UNDER
     sta P_BATTLE
     lda #17
     sta SLOT_NUM
-    lda #CARD_FEUVERT
+    lda P_BATTLE
+    beq _p_erase_battle
     sta CARD_ID
     jsr DrawCardInSlot
-    jsr AnnounceCoupFourre
-_no_p_cf:
+    rts
+_p_erase_battle:
+    jsr EraseSlot
+    rts
+
+_p_chk_hazard_botte:
+    ; --- AUTRES BOTTES (Citerne, As, Increvable) ---
+    sec
+    sbc #15             ; 16->1, 17->2, 18->3
+    cmp P_BATTLE
+    bne _p_finish_botte_play
+    ; Reparee par la parade correspondante (6, 7 ou 8), mais PAS de Feu Vert gratuit !
+    clc
+    adc #5
+    sta P_BATTLE
+    lda #17
+    sta SLOT_NUM
+    lda P_BATTLE
+    sta CARD_ID
+    jsr DrawCardInSlot
+
+_p_finish_botte_play:
     rts
 
 _not_player_botte:
@@ -2907,6 +3173,9 @@ _not_player_botte:
     bcs _not_player_attack
     cmp #CARD_LIMITATION
     beq _p_limit_t
+    lda T_BATTLE
+    sta T_BATTLE_UNDER
+    lda PLAY_CARD
     sta T_BATTLE
     lda #19
     sta SLOT_NUM
@@ -2917,6 +3186,9 @@ _not_player_botte:
     rts
 
 _p_limit_t:
+    lda T_LIMIT
+    sta T_LIMIT_UNDER
+    lda PLAY_CARD
     sta T_LIMIT
     lda #20
     sta SLOT_NUM
@@ -2936,6 +3208,7 @@ _not_player_attack:
     lda #1
     sta P_STARTED
     lda PLAY_CARD
+    sta P_BATTLE_UNDER
 _p_not_feuvert:
     cmp #CARD_FINLIMITE
     beq _p_end_limit
@@ -2951,6 +3224,7 @@ _p_not_feuvert:
 _p_end_limit:
     lda #0
     sta P_LIMIT
+    sta P_LIMIT_UNDER
     lda #16
     sta SLOT_NUM
     jsr EraseSlot
@@ -3140,7 +3414,16 @@ _t_check_my_repairs:
     beq _t_parade_crevaison
     cmp #CARD_FEUROUGE
     beq _t_parade_feurouge
-    jmp _t_check_lim_parade
+
+    ; Si Thomson a repare (Essence=6, Reparation=7, Roue=8) et n'a pas Vehicule Prioritaire,
+    ; il doit jouer un Feu Vert pour pouvoir rouler a nouveau !
+    lda T_BOTTES+3
+    bne +
+    lda #CARD_FEUVERT
+    jsr FindThomsonCard
+    bcc +
+    jmp _t_play_found_card
++   jmp _t_check_lim_parade
 
 _t_parade_panne:
     lda #CARD_ESSENCE
@@ -3346,36 +3629,53 @@ _t_skip_botte_draw:
     lda PLAY_CARD
     cmp #CARD_VEHPRIO
     bne _t_chk_hazard_botte
-    ; Vehicule Prioritaire annule Limitation :
-    lda #0
+
+    ; --- VEHICULE PRIORITAIRE DE THOMSON ---
+    ; 1. Annule la Limitation :
+    lda T_LIMIT_UNDER
     sta T_LIMIT
     lda #20
     sta SLOT_NUM
+    lda T_LIMIT
+    beq _t_erase_lim
+    sta CARD_ID
+    jsr DrawCardInSlot
+    jmp _t_prio_battle
+_t_erase_lim:
     jsr EraseSlot
-    ; Et debloque le feu rouge en feu vert si stopped :
+
+_t_prio_battle:
+    ; 2. Si Feu Rouge, annule le Feu Rouge et restaure la carte precedente :
     lda T_BATTLE
     cmp #CARD_FEUROUGE
     bne _t_finish_botte_play
-    lda #CARD_FEUVERT
+    lda T_BATTLE_UNDER
     sta T_BATTLE
     lda #19
     sta SLOT_NUM
-    lda #CARD_FEUVERT
+    lda T_BATTLE
+    beq _t_erase_battle
     sta CARD_ID
     jsr DrawCardInSlot
     jmp _t_finish_botte_play
+_t_erase_battle:
+    jsr EraseSlot
+    jmp _t_finish_botte_play
 
 _t_chk_hazard_botte:
+    ; --- AUTRES BOTTES (Citerne, As du Volant, Increvable) ---
     sec
     sbc #15             ; 16->1 (Panne), 17->2 (Accident), 18->3 (Crevaison)
     cmp T_BATTLE
     bne _t_finish_botte_play
-    ; Attaque levee par la botte ! Elle equivaut a un Feu Vert officiel
-    lda #CARD_FEUVERT
+    ; Attaque levee : reparee par la parade correspondante (6, 7 ou 8)
+    ; Mais ce n'est PAS un Feu Vert !
+    clc
+    adc #5
     sta T_BATTLE
     lda #19
     sta SLOT_NUM
-    lda #CARD_FEUVERT
+    lda T_BATTLE
     sta CARD_ID
     jsr DrawCardInSlot
 
@@ -3428,6 +3728,9 @@ _t_not_km:
     bcs _t_not_atk
     cmp #CARD_LIMITATION
     beq _t_apply_lim
+    lda P_BATTLE
+    sta P_BATTLE_UNDER
+    lda PLAY_CARD
     sta P_BATTLE
     lda #17
     sta SLOT_NUM
@@ -3438,6 +3741,9 @@ _t_not_km:
     jmp _t_finish_action
 
 _t_apply_lim:
+    lda P_LIMIT
+    sta P_LIMIT_UNDER
+    lda PLAY_CARD
     sta P_LIMIT
     lda #16
     sta SLOT_NUM
@@ -3458,6 +3764,7 @@ _t_not_atk:
     lda #1
     sta T_STARTED
     lda PLAY_CARD
+    sta T_BATTLE_UNDER
 _t_not_fv:
     cmp #CARD_FINLIMITE
     beq _t_apply_endlim
@@ -3473,6 +3780,7 @@ _t_not_fv:
 _t_apply_endlim:
     lda #0
     sta T_LIMIT
+    sta T_LIMIT_UNDER
     lda #20
     sta SLOT_NUM
     jsr EraseSlot
@@ -3880,7 +4188,7 @@ _cmp_done:
 InitDeck:
     ldx #0
     lda #CARD_FEUVERT
-    ldy #10
+    ldy #14
     jsr FillDeckSegment
     lda #CARD_FEUROUGE
     ldy #5
@@ -4650,8 +4958,12 @@ P_BOTTES:       .fill 4, 0
 T_BOTTES:       .fill 4, 0
 P_BATTLE:       .byte 0
 T_BATTLE:       .byte 0
+P_BATTLE_UNDER: .byte 0
+T_BATTLE_UNDER: .byte 0
 P_LIMIT:        .byte 0
 T_LIMIT:        .byte 0
+P_LIMIT_UNDER:  .byte 0
+T_LIMIT_UNDER:  .byte 0
 P_STARTED:      .byte 0
 T_STARTED:      .byte 0
 DISCARD_TOP:    .byte 0

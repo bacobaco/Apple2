@@ -99,7 +99,8 @@ def render_hgr_to_image(mem):
     return img
 
 def run_test():
-    bin_path = os.path.join("1000bornes", "1000bornes.bin")
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    bin_path = os.path.join(script_dir, "1000bornes.bin")
     with open(bin_path, "rb") as f:
         code = f.read()
 
@@ -125,7 +126,7 @@ def run_test():
 
     print(f"Title screen captured at {cycles} cycles. Current PC=${mpu.pc:04X}")
     img_title = render_hgr_to_image(mem.mem)
-    img_title.save(os.path.join("1000bornes", "screen_title.png"))
+    img_title.save(os.path.join(script_dir, "screen_title.png"))
     print("Saved screen_title.png")
 
     # 2. Press space to exit title screen and enter PromptPlayerName
@@ -144,7 +145,7 @@ def run_test():
 
     print(f"Name prompt reached. Current PC=${mpu.pc:04X}")
     img_name = render_hgr_to_image(mem.mem)
-    img_name.save(os.path.join("1000bornes", "screen_name.png"))
+    img_name.save(os.path.join(script_dir, "screen_name.png"))
     print("Saved screen_name.png")
 
     # 3. Type "JOUEUR\r"
@@ -165,7 +166,7 @@ def run_test():
 
     print(f"Board reached. Current PC=${mpu.pc:04X}")
     img_board = render_hgr_to_image(mem.mem)
-    img_board.save(os.path.join("1000bornes", "screen_board.png"))
+    img_board.save(os.path.join(script_dir, "screen_board.png"))
     print("Saved screen_board.png")
 
     # 5. Play Phase 1: Press 'T' (or '1' or ' ') to Draw a Card (Tirer une carte)
@@ -184,7 +185,7 @@ def run_test():
 
     # Save screen with 7 cards in hand
     img_draw = render_hgr_to_image(mem.mem)
-    img_draw.save(os.path.join("1000bornes", "screen_7cards.png"))
+    img_draw.save(os.path.join(script_dir, "screen_7cards.png"))
     print("Saved screen_7cards.png")
 
     # 6. Play Phase 2: Press '2' (or 'D') to choose DEFAUSSER
@@ -224,7 +225,7 @@ def run_test():
 
     print(f"Post-discard state reached. Current PC=${mpu.pc:04X}")
     img_turn = render_hgr_to_image(mem.mem)
-    img_turn.save(os.path.join("1000bornes", "screen_turn.png"))
+    img_turn.save(os.path.join(script_dir, "screen_turn.png"))
     print("Saved screen_turn.png")
 
 if __name__ == "__main__":
