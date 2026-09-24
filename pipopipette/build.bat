@@ -1,4 +1,5 @@
 @echo off
+cd /d "%~dp0"
 echo ========================================================
 echo   Compilation et injection de Pipopipette pour Apple II
 echo ========================================================

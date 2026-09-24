@@ -219,7 +219,7 @@ def run_test():
 
     # Let Thomson take its turn and animations play
     print("8. Letting Thomson take turn...")
-    for _ in range(1200000):
+    for _ in range(4500000):
         mpu.step()
         cycles += 1
 

@@ -93,6 +93,11 @@ MainInit:
     ; Acquitte toute frappe residuelle au boot
     bit KBDSTRB
 
+    ; Initialise INV_FLAG et ANIM_CARD_FLAG a 0 (texte standard blanc sur fond noir)
+    lda #0
+    sta INV_FLAG
+    sta ANIM_CARD_FLAG
+
     ; Initialisation du generateur aleatoire
     lda #$4A
     sta RND_SEED
@@ -185,6 +190,8 @@ InitHGR:
     bit MIXCLR          ; Plein ecran 192 lignes (sans split 4 lignes texte)
     bit TXTPAGE1        ; Page 1 ($2000-$3FFF)
     bit HIRES           ; Haute Resolution
+    lda #0
+    sta INV_FLAG        ; S'assure que le mode texte est standard blanc sur noir
     jsr ClearHGR        ; Efface l'ecran
     rts
 
@@ -343,6 +350,15 @@ _card_advance_scan:
     inc PTR_HI
 _no_src_hi_inc:
     inc CARD_Y
+    lda ANIM_CARD_FLAG
+    beq _no_anim_step
+    lda CARD_Y
+    and #$07            ; Paliers de 8 scanlines (8, 16, 24, 32)
+    bne _no_anim_step
+    jsr CardSlideSound
+    lda #16             ; ~20 ms par palier (total 4 * 20ms = ~80 ms)
+    jsr DelayRoutine
+_no_anim_step:
     lda CARD_Y
     cmp #40
     beq +
@@ -766,6 +782,8 @@ _pop_digits:
 ; ECRAN DE TITRE & ANIMATION ORIGINALE MO5
 ; =============================================================================
 TitleScreen:
+    lda #0
+    sta INV_FLAG        ; S'assure que le titre est en blanc sur fond noir
     jsr ClearHGR
 
     ; 1. Logo "1000" (gauche) et "BORNES" (droite)
@@ -1044,6 +1062,8 @@ DEMO_CARD:  .byte 0
 DEMO_Y:     .byte 0
 
 EraseDemoTextLine:
+    lda #0
+    sta INV_FLAG        ; Effacement en noir pur obligatoire
     lda #2
     sta HGR_COL
     lda #14
@@ -1080,6 +1100,8 @@ StrBlankLine:       .text "                                    ", 0
 ; SAISIE DU NOM DU JOUEUR EN HGR
 ; =============================================================================
 PromptPlayerName:
+    lda #0
+    sta INV_FLAG
     jsr ClearHGR
     bit KBDSTRB
 
@@ -1095,7 +1117,12 @@ PromptPlayerName:
 
     ldx #0
 _name_input_loop:
-    lda KBD
+    inc RND_SEED
+    bne +
+    inc RND_SEED+1
+    bne +
+    inc RND_SEED
++   lda KBD
     bpl _name_input_loop
     bit KBDSTRB
     and #$7F
@@ -1736,6 +1763,7 @@ _dsk_skip_col:
 ScoreNumDigits:     .byte 0
 ScoreTotalLen:      .byte 0
 ScoreCharIndices:   .fill 10, 0
+TalonShiftFlag:     .byte 0
 
 DrawTalonDigits:
     lda DECK_REMAIN
@@ -1764,14 +1792,20 @@ DrawTalonDigits:
     beq _dtd_two_digits
 
     ; 3 chiffres : cols 18, 19, 20
+    lda #0
+    sta TalonShiftFlag
     lda #18
     sta CARD_COL
     lda DEC_BUF+2
     jsr _draw_one_talon_digit
+    lda #0
+    sta TalonShiftFlag
     lda #19
     sta CARD_COL
     lda DEC_BUF+3
     jsr _draw_one_talon_digit
+    lda #1
+    sta TalonShiftFlag
     lda #20
     sta CARD_COL
     lda DEC_BUF+4
@@ -1780,10 +1814,14 @@ DrawTalonDigits:
 
 _dtd_two_digits:
     ; 2 chiffres : centres aux colonnes 19 et 20
+    lda #0
+    sta TalonShiftFlag
     lda #19
     sta CARD_COL
     lda DEC_BUF+3
     jsr _draw_one_talon_digit
+    lda #1
+    sta TalonShiftFlag
     lda #20
     sta CARD_COL
     lda DEC_BUF+4
@@ -1850,8 +1888,11 @@ _dtd_scan_loop:
 
     ldx PTR_LO
     lda TalonDigitsTable,x
-    sta TEMP_Y
     inc PTR_LO
+    ldy TalonShiftFlag
+    beq +
+    asl                 ; decale d'un pixel a droite (bits 1..6) pour espacer l'unite
++   sta TEMP_Y
 
     lda TEMP_Y
     eor #$7F
@@ -2101,6 +2142,26 @@ DisplayThomsonDisc:
     jsr PrintTopBarText
     rts
 
+DisplayPlayerPlay:
+    jsr ClearTopBar
+    lda #<StrVousJouez
+    sta STR_LO
+    lda #>StrVousJouez
+    sta STR_HI
+    lda #1
+    jsr PrintTopBarText
+    ldx PLAY_CARD
+    lda CardNamesLo,x
+    sta STR_LO
+    lda CardNamesHi,x
+    sta STR_HI
+    lda #13
+    cpx #CARD_VEHPRIO
+    bne +
+    lda #12             ; Vehicule Prioritaire un peu plus a gauche pour tenir sur 40 cols
++   jsr PrintTopBarText
+    rts
+
 ; =============================================================================
 ; GESTION DU CURSEUR DE SELECTION DE CARTE EN MAIN (LIGNE 7)
 ; =============================================================================
@@ -2177,6 +2238,7 @@ StrActionIllegale:  .text "*** ACTION ILLEGALE ! ***", 0
 StrTourThomson:     .text "TOUR DE THOMSON...", 0
 StrThomJoue:        .text "THOMSON JOUE: ", 0
 StrThomDefausse:    .text "THOMSON JETTE: ", 0
+StrVousJouez:       .text "VOUS JOUEZ: ", 0
 StrNoCF:            .text "PAS DE COUP-FOURRE POSSIBLE !", 0
 
 ; =============================================================================
@@ -2292,6 +2354,8 @@ _start_thomson_turn:
     beq _talon_exhausted
     jsr DrawThomsonCardFromDeck
     jsr UpdateScoresAndDrawCount
+    jsr DrawMenuThomson     ; Affiche "TOUR DE THOMSON..."
+    jsr WaitThomsonThink    ; Pause de reflexion (~800 ms)
 
     jsr ThomsonTurnAction
     lda T_KMS+1
@@ -2338,7 +2402,12 @@ PlayerTurnAction:
     jsr DrawMenuDraw
 
 _wait_draw_key:
-    lda KBD
+    inc RND_SEED
+    bne +
+    inc RND_SEED+1
+    bne +
+    inc RND_SEED
++   lda KBD
     bpl _wait_draw_key
     bit KBDSTRB
     and #$7F
@@ -2429,7 +2498,12 @@ PlayerTurnActionPhase:
     jsr DrawMenuAction
 
 _wait_action_key:
-    lda KBD
+    inc RND_SEED
+    bne +
+    inc RND_SEED+1
+    bne +
+    inc RND_SEED
++   lda KBD
     bpl _wait_action_key
     bit KBDSTRB
     and #$7F
@@ -2542,7 +2616,12 @@ _enter_pick_loop:
     jsr HighlightCardCursor
 
 _pick_card_loop:
-    lda KBD
+    inc RND_SEED
+    bne +
+    inc RND_SEED+1
+    bne +
+    inc RND_SEED
++   lda KBD
     bpl _pick_card_loop
     bit KBDSTRB
     and #$7F
@@ -2662,7 +2741,7 @@ _do_discard_selected_card:
     jsr ClearCardCursor
     lda PLAY_CARD
     sta DISCARD_TOP
-    lda #18
+    lda #18             ; Slot 18 = Defausse centrale
     sta SLOT_NUM
     lda DISCARD_TOP
     sta CARD_ID
@@ -2747,18 +2826,22 @@ _do_cf_execute:
     bne +
     sta P_STARTED
 +
+    ; Fait apparaitre la botte dans les slots 8..11 !
     lda P_BOTTE_COUNT
     cmp #4
-    bcs +
+    bcs _p_skip_cf_botte_draw
     clc
     adc #8
     sta SLOT_NUM
     inc P_BOTTE_COUNT
     lda PLAY_CARD
     sta CARD_ID
+    lda #1
+    sta ANIM_CARD_FLAG  ; Animation glissee de la botte qui apparait !
     jsr DrawCardInSlot
-    jsr BeepSound
-+
+    lda #0
+    sta ANIM_CARD_FLAG
+_p_skip_cf_botte_draw:
     ; 2. Bonus Coup-Fourre (+300) et depart d'office avec Feu Vert officiel
     inc P_CF_COUNT
     lda #1
@@ -2872,7 +2955,14 @@ _dpcd_found_slot:
     jsr DrawCardFromDeck
     ldx TEMP_X
     sta P_HAND,x
-    jsr RedrawPlayerHand
+    inx
+    stx SLOT_NUM
+    sta CARD_ID
+    lda #1
+    sta ANIM_CARD_FLAG
+    jsr DrawCardInSlot
+    lda #0
+    sta ANIM_CARD_FLAG
     jsr UpdateScoresAndDrawCount
     jsr BeepSound
 _dpcd_empty:
@@ -2915,13 +3005,13 @@ _not_botte_rule:
     beq _check_lim_thomson
 
     cmp #CARD_ESSENCE
-    beq _check_rem_self
+    beq _to_check_rem_self
     cmp #CARD_REPARATION
-    beq _check_rem_self
+    beq _to_check_rem_self
     cmp #CARD_ROUESECOUR
-    beq _check_rem_self
+    beq _to_check_rem_self
     cmp #CARD_FEUVERT
-    beq _check_green_self
+    beq _to_check_green_self
     cmp #CARD_FINLIMITE
     bne +
     jmp _check_endlim_self
@@ -2941,6 +3031,11 @@ _not_botte_rule:
     clc
     rts
 
+_to_check_rem_self:
+    jmp _check_rem_self
+_to_check_green_self:
+    jmp _check_green_self
+
 _to_check_dist_std:
     jmp _check_dist_standard
 
@@ -2956,18 +3051,42 @@ _check_atk_thomson:
     lda PLAY_CARD
     cmp #CARD_FEUROUGE
     bne _check_botte_imm
+
+    ; Cas Feu Rouge : Thomson ne doit pas avoir Vehicule Prioritaire
     lda T_BOTTES+3
     bne _to_illegal_move
+    ; Feu Rouge ne peut etre pose que sur un Feu Vert
+    lda T_BATTLE
+    cmp #CARD_FEUVERT
+    bne _to_illegal_move
+    sec
+    rts
+
 _check_botte_imm:
+    ; Cas Panne (1), Accident (2), Crevaison (3)
     lda PLAY_CARD
     sec
     sbc #1
     tax
-    cpx #3
-    bcs _check_t_green_light
     lda T_BOTTES,x
-    bne _to_illegal_move
-_check_t_green_light:
+    bne _to_illegal_move   ; Thomson immunise par sa botte (Citerne, As, Increvable)
+
+    ; Verifie si Thomson a deja une attaque active en cours
+    lda T_BATTLE
+    cmp #CARD_PANNE
+    beq _to_illegal_move
+    cmp #CARD_ACCIDENT
+    beq _to_illegal_move
+    cmp #CARD_CREVAISON
+    beq _to_illegal_move
+    cmp #CARD_FEUROUGE
+    beq _to_illegal_move
+
+    ; Thomson n'est pas bloque par une attaque. Roule-t-il ?
+    lda T_BOTTES+3
+    bne _to_legal_move     ; Avec Vehicule Prioritaire, Thomson roule d'office (y compris sur parade) !
+
+    ; Sans Vehicule Prioritaire, Thomson ne roule que s'il a un Feu Vert
     lda T_BATTLE
     cmp #CARD_FEUVERT
     bne _to_illegal_move
@@ -3013,14 +3132,14 @@ _check_green_self:
 _check_endlim_self:
     lda P_LIMIT
     cmp #CARD_LIMITATION
-    bne _to_illegal_move
+    bne _illegal_move_exit
     sec
     rts
 
 _check_dist_200:
     lda P_200_COUNT
     cmp #2
-    bcs _to_illegal_move
+    bcs _illegal_move_exit
     jmp _check_dist_standard
 
 _check_dist_standard:
@@ -3088,7 +3207,8 @@ ApplyPlayerCard:
     bcs _is_player_botte
     jmp _not_player_botte
 _is_player_botte:
-
+    jsr DisplayPlayerPlay   ; Affiche "VOUS JOUEZ: BOTTE : ..."
+    lda PLAY_CARD
     sec
     sbc #CARD_CITERNE   ; 0..3
     tax
@@ -3107,8 +3227,14 @@ _is_player_botte:
     inc P_BOTTE_COUNT
     lda PLAY_CARD
     sta CARD_ID
+    lda #1
+    sta ANIM_CARD_FLAG  ; Fait apparaitre la botte avec animation glissee !
     jsr DrawCardInSlot
-    jsr BeepSound
+    lda #0
+    sta ANIM_CARD_FLAG
+    jsr FanfareSound    ; Fanfare pour celebrer la botte !
+    lda #100            ; Pause ~1.3 seconde pour admirer l'apparition de la botte
+    jsr DelayRoutine
 _p_skip_botte_draw:
     ; Effet de la botte posee a son tour normal (PAS un coup-fourre !)
     lda PLAY_CARD
@@ -3149,6 +3275,7 @@ _p_erase_battle:
 
 _p_chk_hazard_botte:
     ; --- AUTRES BOTTES (Citerne, As, Increvable) ---
+    lda PLAY_CARD
     sec
     sbc #15             ; 16->1, 17->2, 18->3
     cmp P_BATTLE
@@ -3232,6 +3359,7 @@ _p_end_limit:
     rts
 
 _is_player_km:
+    jsr DisplayPlayerPlay
     jsr GetCardKm
     lda P_KMS
     clc
@@ -3248,6 +3376,8 @@ _is_player_km:
 _p_no_200_inc:
     jsr UpdateScoresAndDrawCount
     jsr BeepSound
+    lda #60
+    jsr DelayRoutine
     rts
 
 GetCardKm:
@@ -3298,19 +3428,16 @@ _gck_zero:
     rts
 
 AnnounceCoupFourre:
-    lda #4
-    sta HGR_COL
-    lda #0
-    sta HGR_ROW
+    jsr ClearTopBar
     lda #<StrCoupFourre
     sta STR_LO
     lda #>StrCoupFourre
     sta STR_HI
-    jsr HGR_PrintString
+    lda #4
+    jsr PrintTopBarText
     jsr FanfareSound
-    lda #20
+    lda #120            ; ~1.5 seconde de pause pour savourer le coup-fourre et admirer la botte
     jsr DelayRoutine
-    jsr DrawMenuAction
     rts
 
 StrCoupFourre:  .text "***** COUP-FOURRE ! (+300) *****", 0
@@ -3405,25 +3532,53 @@ _t_check_my_repairs:
     ; -------------------------------------------------------------------------
     lda T_BATTLE
     bne +
+    lda T_BOTTES+3
+    beq _t_go_start_game
+    jmp _t_check_lim_parade ; Thomson a VP, il roule d'office des le debut !
+_t_go_start_game:
     jmp _t_check_start_game
 +   cmp #CARD_PANNE
-    beq _t_parade_panne
-    cmp #CARD_ACCIDENT
-    beq _t_parade_accident
-    cmp #CARD_CREVAISON
-    beq _t_parade_crevaison
-    cmp #CARD_FEUROUGE
-    beq _t_parade_feurouge
-
-    ; Si Thomson a repare (Essence=6, Reparation=7, Roue=8) et n'a pas Vehicule Prioritaire,
-    ; il doit jouer un Feu Vert pour pouvoir rouler a nouveau !
-    lda T_BOTTES+3
     bne +
+    jmp _t_parade_panne
++   cmp #CARD_ACCIDENT
+    bne +
+    jmp _t_parade_accident
++   cmp #CARD_CREVAISON
+    bne +
+    jmp _t_parade_crevaison
++   cmp #CARD_FEUROUGE
+    bne +
+    jmp _t_parade_feurouge
++
+    ; Si Thomson a deja un Feu Vert, il roule deja : NE PAS JOUER DE FEU VERT !
+    cmp #CARD_FEUVERT
+    beq _to_t_check_lim
+
+    ; Est-ce une parade (Essence, Reparation, Roue de secours) ?
+    cmp #CARD_ESSENCE
+    bcc _to_t_check_lim
+    cmp #CARD_ROUESECOUR+1
+    bcs _to_t_check_lim
+
+    ; C'est Essence=6, Reparation=7, ou Roue=8 :
+    ; Si Thomson a repare et n'a PAS Vehicule Prioritaire,
+    ; il lui faut imperativement un Feu Vert (ou VP) pour repartir !
+    lda T_BOTTES+3
+    bne _to_t_check_lim
     lda #CARD_FEUVERT
     jsr FindThomsonCard
-    bcc +
+    bcc _t_chk_vp_repair
     jmp _t_play_found_card
-+   jmp _t_check_lim_parade
+_t_chk_vp_repair:
+    lda #CARD_VEHPRIO
+    jsr FindThomsonCard
+    bcc _to_t_check_lim_stopped
+    jmp _t_play_botte
+
+_to_t_check_lim:
+    jmp _t_check_lim_parade
+_to_t_check_lim_stopped:
+    jmp _t_check_lim_parade_when_stopped
 
 _t_parade_panne:
     lda #CARD_ESSENCE
@@ -3431,14 +3586,11 @@ _t_parade_panne:
     bcc _t_chk_panne_botte
     jmp _t_play_found_card
 _t_chk_panne_botte:
-    lda DECK_REMAIN
-    cmp #10
-    bcs +
     lda #CARD_CITERNE
     jsr FindThomsonCard
     bcc +
     jmp _t_play_botte
-+   jmp _t_try_attack_or_discard
++   jmp _t_check_lim_parade_when_stopped
 
 _t_parade_accident:
     lda #CARD_REPARATION
@@ -3446,14 +3598,11 @@ _t_parade_accident:
     bcc _t_chk_acc_botte
     jmp _t_play_found_card
 _t_chk_acc_botte:
-    lda DECK_REMAIN
-    cmp #10
-    bcs +
     lda #CARD_ASVOLANT
     jsr FindThomsonCard
     bcc +
     jmp _t_play_botte
-+   jmp _t_try_attack_or_discard
++   jmp _t_check_lim_parade_when_stopped
 
 _t_parade_crevaison:
     lda #CARD_ROUESECOUR
@@ -3461,14 +3610,11 @@ _t_parade_crevaison:
     bcc _t_chk_crev_botte
     jmp _t_play_found_card
 _t_chk_crev_botte:
-    lda DECK_REMAIN
-    cmp #10
-    bcs +
     lda #CARD_INCREVABLE
     jsr FindThomsonCard
     bcc +
     jmp _t_play_botte
-+   jmp _t_try_attack_or_discard
++   jmp _t_check_lim_parade_when_stopped
 
 _t_parade_feurouge:
     lda #CARD_FEUVERT
@@ -3476,24 +3622,33 @@ _t_parade_feurouge:
     bcc _t_chk_feu_botte
     jmp _t_play_found_card
 _t_chk_feu_botte:
-    lda DECK_REMAIN
-    cmp #10
-    bcs +
     lda #CARD_VEHPRIO
     jsr FindThomsonCard
     bcc +
     jmp _t_play_botte
-+   jmp _t_try_attack_or_discard
++   jmp _t_check_lim_parade_when_stopped
 
 _t_check_lim_parade:
+    ; Thomson roule (Feu Vert, VP, ou pas de panne).
+    ; S'il a une Limitation de vitesse et Fin de Limite en main, il la joue !
     lda T_LIMIT
     cmp #CARD_LIMITATION
     bne _t_normal_drive
     lda #CARD_FINLIMITE
     jsr FindThomsonCard
-    bcc +
+    bcc _t_normal_drive
     jmp _t_play_found_card
-+
+
+_t_check_lim_parade_when_stopped:
+    ; Thomson est bloque par une attaque ou attend un Feu Vert.
+    ; Mais s'il est limite et a Fin de Limite en main, il doit la jouer !
+    lda T_LIMIT
+    cmp #CARD_LIMITATION
+    bne _t_try_attack_or_discard
+    lda #CARD_FINLIMITE
+    jsr FindThomsonCard
+    bcc _t_try_attack_or_discard
+    jmp _t_play_found_card
 
 _t_check_start_game:
     lda #CARD_FEUVERT
@@ -3501,14 +3656,11 @@ _t_check_start_game:
     bcc _t_check_start_botte
     jmp _t_play_found_card
 _t_check_start_botte:
-    lda DECK_REMAIN
-    cmp #50
-    bcs +
     lda #CARD_VEHPRIO
     jsr FindThomsonCard
     bcc +
     jmp _t_play_botte
-+   jmp _t_try_attack_or_discard
++   jmp _t_check_lim_parade_when_stopped
 
 _t_normal_drive:
     ; -------------------------------------------------------------------------
@@ -3610,7 +3762,6 @@ _t_play_botte:
     bne +
     sta T_STARTED
 +
-
     ; Dessin de la botte dans l'emplacement 12..15 si < 4
     lda T_BOTTE_COUNT
     cmp #4
@@ -3621,8 +3772,12 @@ _t_play_botte:
     inc T_BOTTE_COUNT
     lda PLAY_CARD
     sta CARD_ID
+    lda #1
+    sta ANIM_CARD_FLAG  ; Animation glissee de la botte de Thomson !
     jsr DrawCardInSlot
-    jsr BeepSound
+    lda #0
+    sta ANIM_CARD_FLAG
+    jsr FanfareSound
 
 _t_skip_botte_draw:
     ; Effet immédiat de la botte jouée sur les attaques actives
@@ -3664,6 +3819,7 @@ _t_erase_battle:
 
 _t_chk_hazard_botte:
     ; --- AUTRES BOTTES (Citerne, As du Volant, Increvable) ---
+    lda PLAY_CARD
     sec
     sbc #15             ; 16->1 (Panne), 17->2 (Accident), 18->3 (Crevaison)
     cmp T_BATTLE
@@ -3687,8 +3843,7 @@ _t_finish_botte_play:
     ; Thomson pioche et rejoue !
     jsr DrawThomsonCardFromDeck
     jsr UpdateScoresAndDrawCount
-    lda #30
-    jsr DelayRoutine
+    jsr WaitThomsonActionPause  ; Pause pour admirer la botte (~2 secondes)
     jmp ThomsonTurnAction
 
 _t_play_found_card:
@@ -3696,7 +3851,7 @@ _t_play_found_card:
     lda T_HAND,x
     sta PLAY_CARD
     jsr DisplayThomsonPlay
-    lda PLAY_CARD        ; Restaure l'identifiant de la carte apres affichage
+    lda PLAY_CARD        ; Recharge impérativement PLAY_CARD dans A après affichage du texte !
 
     ; Est-ce une distance ? (11..15)
     cmp #CARD_200KM
@@ -3791,12 +3946,26 @@ _t_finish_action:
     lda #0
     sta T_HAND,x
     jsr CompactThomsonHand
-    lda #30
-    jsr DelayRoutine
+    jsr WaitThomsonActionPause  ; Pause d'observation (~2.0 secondes, skippable)
     rts
 
 ; =============================================================================
 ; DEFAUSSE INTELLIGENTE SELON LES CRITERES ORIGINAUX DU MO5
+CountThomsonCardInHand:
+    ; Entree : A = CARD_ID a compter
+    ; Sortie : Y = nombre d'exemplaires dans T_HAND (0..7)
+    ldy #0
+    ldx #0
+-   cmp T_HAND,x
+    bne +
+    iny
++   inx
+    cpx #7
+    bne -
+    rts
+
+; =============================================================================
+; DEFAUSSE INTELLIGENTE SELON LES CRITERES ORIGINAUX DU MO5 (BOUCROT 1985)
 ; =============================================================================
 ThomsonSmartDiscard:
     lda #0
@@ -3812,7 +3981,7 @@ _eval_disc_loop:
     jmp _skip_eval_card
 +   sta PLAY_CARD
 
-    ; Ne jamais défausser une botte (Score 0)
+    ; 1. Ne jamais defausser une botte (Score 0)
     cmp #CARD_CITERNE
     bcc _eval_non_botte
     cmp #CARD_VEHPRIO+1
@@ -3821,7 +3990,7 @@ _eval_disc_loop:
     jmp _compare_score
 
 _eval_non_botte:
-    ; 1. Attaque contre un joueur immunise ? (Score 90)
+    ; 2. Attaque contre un joueur immunise ? (Score 90)
     cmp #CARD_FEUROUGE
     bne _chk_disc_crev
     lda P_BOTTES+3
@@ -3855,25 +4024,155 @@ _chk_disc_panne:
 
 _chk_disc_lim:
     cmp #CARD_LIMITATION
-    bne _chk_disc_dist
+    bne _chk_disc_parades
     lda P_BOTTES+3
-    beq _chk_disc_dist
+    beq _chk_disc_atk_dup
     lda #90
     jmp _compare_score
 
-_chk_disc_dist:
-    ; 2. Distance depassant 700 ou 200km epuise ? (Score 80)
+_chk_disc_atk_dup:
+    ; C'est une attaque (1..5) contre un joueur non immunise.
+    ; Si Thomson en a au moins 2 en main, defausser le doublon ! (Score 55)
     lda PLAY_CARD
+    jsr CountThomsonCardInHand
+    cpy #2
+    bcc +
+    lda #55
+    jmp _compare_score
++   ; Attaque unique utile a garder : Score 20
+    lda #20
+    jmp _compare_score
+
+_to_chk_disc_dist:
+    jmp _chk_disc_dist
+
+_p_is_immune:
+    ; Thomson est immunise a cette panne par sa botte posee : Score 85
+    lda #85
+    jmp _compare_score
+
+_p_has_botte_in_hand:
+    ; Thomson a la botte correspondante en main : Score 75
+    lda #75
+    jmp _compare_score
+
+_p_must_keep_zero:
+    lda #0
+    jmp _compare_score
+
+_chk_disc_parades:
+    ; 3. Parades (6..10)
+    cmp #CARD_ESSENCE
+    bcc _to_chk_disc_dist
+    cmp #CARD_FEUVERT+1
+    bcs _to_chk_disc_dist
+
+    ; Est-ce Essence (6) ?
+    cmp #CARD_ESSENCE
+    bne _chk_p_rep
+    lda T_BOTTES+0      ; Thomson a-t-il la Citerne ?
+    bne _p_is_immune
+    lda #CARD_CITERNE
+    jsr FindThomsonCard ; Thomson a-t-il la Citerne en main ?
+    bcs _p_has_botte_in_hand
+    lda T_BATTLE
+    cmp #CARD_PANNE
+    beq _p_must_keep_zero ; Vital : Thomson est en panne !
+    jmp _chk_p_dup
+
+_chk_p_rep:
+    cmp #CARD_REPARATION
+    bne _chk_p_roue
+    lda T_BOTTES+1      ; As du volant ?
+    bne _p_is_immune
+    lda #CARD_ASVOLANT
+    jsr FindThomsonCard
+    bcs _p_has_botte_in_hand
+    lda T_BATTLE
+    cmp #CARD_ACCIDENT
+    beq _p_must_keep_zero
+    jmp _chk_p_dup
+
+_chk_p_roue:
+    cmp #CARD_ROUESECOUR
+    bne _chk_p_finlim
+    lda T_BOTTES+2      ; Increvable ?
+    bne _p_is_immune
+    lda #CARD_INCREVABLE
+    jsr FindThomsonCard
+    bcs _p_has_botte_in_hand
+    lda T_BATTLE
+    cmp #CARD_CREVAISON
+    beq _p_must_keep_zero
+    jmp _chk_p_dup
+
+_chk_p_finlim:
+    cmp #CARD_FINLIMITE
+    bne _chk_p_feuvert
+    lda T_BOTTES+3      ; Vehicule Prioritaire ?
+    bne _p_is_immune
+    lda #CARD_VEHPRIO
+    jsr FindThomsonCard
+    bcs _p_has_botte_in_hand
+    lda T_LIMIT
+    cmp #CARD_LIMITATION
+    beq _p_must_keep_zero ; Indispensable ! Score 0
+    jmp _chk_p_dup
+
+_chk_p_feuvert:
+    ; C'est Feu Vert (10)
+    lda T_BOTTES+3      ; Vehicule Prioritaire ?
+    beq +
+    jmp _p_is_immune
++   lda #CARD_VEHPRIO
+    jsr FindThomsonCard
+    bcc +
+    jmp _p_has_botte_in_hand
++
+    lda PLAY_CARD
+    jsr CountThomsonCardInHand
+    cpy #3
+    bcs _p_fv_triple    ; >= 3 Feu Vert en main : Score 70
+    ; Roule-t-on deja avec un Feu Vert ?
+    lda T_BATTLE
+    cmp #CARD_FEUVERT
+    beq _p_fv_spare     ; Deja un Feu Vert sur table : Score 40
+    ; Pas de Feu Vert sur la table : VITAL ! Score 0
+    jmp _p_must_keep_zero
+
+_p_fv_triple:
+    lda #70
+    jmp _compare_score
+
+_p_fv_spare:
+    lda #40
+    jmp _compare_score
+
+_chk_p_dup:
+    ; Parade dont Thomson a au moins 2 exemplaires en main : Score 60
+    lda PLAY_CARD
+    jsr CountThomsonCardInHand
+    cpy #2
+    bcc +
+    lda #60
+    jmp _compare_score
++   ; Parade unique de reserve : Score 30
+    lda #30
+    jmp _compare_score
+
+_chk_disc_dist:
+    ; 4. Distance (11..15)
     cmp #CARD_200KM
-    bcc _chk_disc_parade_imm
+    bcc _chk_disc_default
     cmp #CARD_25KM+1
-    bcs _chk_disc_parade_imm
+    bcs _chk_disc_default
 
     cmp #CARD_200KM
     bne _chk_dist_val_sum
     lda T_200_COUNT
     cmp #2
     bcc _chk_dist_val_sum
+    ; 200 KM epuise : Score 80
     lda #80
     jmp _compare_score
 
@@ -3895,61 +4194,23 @@ _chk_dist_val_sum:
     beq _dist_not_over
     bcc _dist_not_over
 _dist_is_over:
-    lda #80
+    ; Distance qui depasse 700 : Score 78
+    lda #78
     jmp _compare_score
 
 _dist_not_over:
-    ; Plus la distance est faible, plus elle est defaussable (25km=Score 35, 200km=Score 27)
+    ; Distance jouable utile : Score faible (10..18)
+    ; 25km=18, 50km=16, 75km=14, 100km=12, 200km=10
     lda PLAY_CARD
-    asl
+    sec
+    sbc #CARD_200KM     ; 0..4
+    asl                 ; 0, 2, 4, 6, 8
     clc
-    adc #5
+    adc #10             ; 10..18
     jmp _compare_score
 
-_chk_disc_parade_imm:
-    ; 3. Parade pour une panne dont on est immunise ? (Score 70)
-    lda PLAY_CARD
-    cmp #CARD_ESSENCE
-    bne _chk_p_rep
-    lda T_BOTTES+0
-    beq _chk_p_default
-    lda #70
-    jmp _compare_score
-
-_chk_p_rep:
-    cmp #CARD_REPARATION
-    bne _chk_p_roue
-    lda T_BOTTES+1
-    beq _chk_p_default
-    lda #70
-    jmp _compare_score
-
-_chk_p_roue:
-    cmp #CARD_ROUESECOUR
-    bne _chk_p_finlim
-    lda T_BOTTES+2
-    beq _chk_p_default
-    lda #70
-    jmp _compare_score
-
-_chk_p_finlim:
-    cmp #CARD_FINLIMITE
-    bne _chk_p_feuvert
-    lda T_BOTTES+3
-    beq _chk_p_default
-    lda #70
-    jmp _compare_score
-
-_chk_p_feuvert:
-    cmp #CARD_FEUVERT
-    bne _chk_p_default
-    lda T_BOTTES+3
-    beq _chk_p_default
-    lda #70
-    jmp _compare_score
-
-_chk_p_default:
-    lda #40
+_chk_disc_default:
+    lda #20
 
 _compare_score:
     cmp BEST_DISC_SCORE
@@ -3977,14 +4238,17 @@ _skip_eval_card:
     sta SLOT_NUM
     lda DISCARD_TOP
     sta CARD_ID
+    lda #1
+    sta ANIM_CARD_FLAG  ; Animation glissee de la carte dans le sabot de defausse !
     jsr DrawCardInSlot
+    lda #0
+    sta ANIM_CARD_FLAG
     jsr BeepSound
     ldx T_PLAY_IDX
     lda #0
     sta T_HAND,x
     jsr CompactThomsonHand
-    lda #30
-    jsr DelayRoutine
+    jsr WaitThomsonActionPause  ; Pause d'observation (~2.0 secondes)
     rts
 
 BEST_DISC_SCORE:    .byte 0
@@ -4033,11 +4297,30 @@ _t_roll_yes:
     rts
 
 ThomsonTryAttackPlayer:
+    ; Verifie si le joueur a deja une attaque active en cours
+    lda P_BATTLE
+    cmp #CARD_PANNE
+    beq _tatk_chk_lim
+    cmp #CARD_ACCIDENT
+    beq _tatk_chk_lim
+    cmp #CARD_CREVAISON
+    beq _tatk_chk_lim
+    cmp #CARD_FEUROUGE
+    beq _tatk_chk_lim
+
+    ; Verifie si le joueur roule
+    lda P_BOTTES+3      ; Vehicule Prioritaire ?
+    bne _tatk_can_hazard ; Si le joueur a VP, il roule d'office sans Feu Vert !
     lda P_BATTLE
     cmp #CARD_FEUVERT
-    bne _tatk_chk_lim
+    bne _tatk_chk_lim   ; Sans VP, le joueur doit avoir un Feu Vert pour rouler
 
+_tatk_can_hazard:
+    ; 1. Feu Rouge (uniquement si le joueur n'a pas VP et a un Feu Vert)
     lda P_BOTTES+3
+    bne _tatk_chk_crev
+    lda P_BATTLE
+    cmp #CARD_FEUVERT
     bne _tatk_chk_crev
     lda #CARD_FEUROUGE
     jsr FindThomsonCard
@@ -4248,7 +4531,10 @@ InitDeck:
     lda #106
     sta DECK_REMAIN
 
-    ; Melange Fisher-Yates
+    ; Melange Fisher-Yates en 2 passes completes
+    lda #2
+    sta ShufflePass
+_pass_loop:
     ldx #105
 _shuffle_loop:
     stx TEMP_X
@@ -4278,7 +4564,12 @@ _mod_done:
     ldx TEMP_X
     dex
     bne _shuffle_loop
+
+    dec ShufflePass
+    bne _pass_loop
     rts
+
+ShufflePass:        .byte 0
 
 FillDeckSegment:
 _fill_seg_loop:
@@ -4302,16 +4593,21 @@ _deck_is_empty:
 GetRandomByte:
     lda RND_SEED+1
     lsr
-    lda RND_SEED
-    ror
-    bcc _no_xor_lfsr
-    eor #$B4
-_no_xor_lfsr:
-    sta RND_SEED
-    lda RND_SEED+1
-    ror
     sta RND_SEED+1
+    ror RND_SEED
+    bcc +
+    lda RND_SEED+1
+    eor #$B4
+    sta RND_SEED+1
++   ; Reinitialise si la graine est a zero
     lda RND_SEED
+    ora RND_SEED+1
+    bne +
+    lda #$4A
+    sta RND_SEED
+    lda #$9B
+    sta RND_SEED+1
++   lda RND_SEED
     rts
 
 ; =============================================================================
@@ -4810,7 +5106,12 @@ StrReplay:      .text "UNE AUTRE PARTIE (O/N) ? ", 0
 ; ROUTINES UTILITAIRES ET EFFETS SONORES
 ; =============================================================================
 WaitKey:
-    lda KBD
+    inc RND_SEED
+    bne +
+    inc RND_SEED+1
+    bne +
+    inc RND_SEED
++   lda KBD
     bpl WaitKey
     bit KBDSTRB
     and #$7F
@@ -4889,7 +5190,10 @@ DelayRoutine:
     lda $0103,x         ; A original (nombre d'iterations)
     tax
 _del_outer:
-    ldy #0
+    inc RND_SEED
+    bne +
+    inc RND_SEED+1
++   ldy #0
 _del_inner:
     dey
     bne _del_inner
@@ -4900,6 +5204,49 @@ _del_inner:
     pla
     tax
     pla
+    rts
+
+CardSlideSound:
+    bit SPEAKER
+    ldy #35
+-   dey
+    bne -
+    bit SPEAKER
+    rts
+
+WaitThomsonThink:
+    ldx #4              ; ~800 ms de reflexion
+_wtt_loop:
+    lda #160
+    jsr DelayRoutine
+    lda KBD
+    bmi _wtt_skip
+    dex
+    bne _wtt_loop
+    rts
+_wtt_skip:
+    bit KBDSTRB
+    rts
+
+WaitThomsonActionPause:
+    bit KBDSTRB         ; Acquitte toute frappe residuelle pour eviter le zapping instantane
+    ldx #9              ; ~2.0 secondes d'observation
+_wtap_loop:
+    lda #180
+    jsr DelayRoutine
+    cpx #7              ; Au moins 2 boucles obligatoires (~450 ms) pour voir la carte
+    bcc _wtap_check_key
+    dex
+    bne _wtap_loop
+    rts
+_wtap_check_key:
+    lda KBD
+    bmi _wtap_skip      ; Si le joueur appuie sur une touche apres le minimum, fin de pause
+    dex
+    bne _wtap_loop
+    rts
+_wtap_skip:
+    bit KBDSTRB
     rts
 
 ; Table des noms de cartes
@@ -4980,5 +5327,6 @@ DECK_DATA:      .fill 106, 0
 MENU_SEL:       .byte 0
 PICK_MODE:      .byte 0
 CF_HAND_IDX:    .byte 0
+ANIM_CARD_FLAG: .byte 0
 
 .end

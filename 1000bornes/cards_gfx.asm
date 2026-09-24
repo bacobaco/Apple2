@@ -57,22 +57,22 @@ CARD_GFX_00
     .byte $BE, $D5, $AA, $D5, $1F
     .byte $BE, $D5, $AA, $D5, $9E
     .byte $BE, $D5, $AA, $D5, $9E
-    .byte $7E, $7F, $7D, $6F, $1F
-    .byte $7E, $7F, $7E, $5F, $1F
-    .byte $7E, $7F, $7E, $1B, $1F
-    .byte $7E, $3F, $7B, $09, $18
-    .byte $7E, $3F, $76, $01, $10
-    .byte $7E, $0F, $68, $00, $00
-    .byte $7E, $07, $00, $00, $00
-    .byte $7E, $03, $00, $00, $00
-    .byte $7E, $61, $70, $61, $00
-    .byte $7E, $21, $6F, $5E, $00
-    .byte $7E, $40, $1F, $3F, $00
-    .byte $7E, $42, $19, $33, $10
-    .byte $7E, $42, $19, $33, $10
-    .byte $7E, $58, $1F, $3F, $07
-    .byte $7E, $3F, $6F, $5E, $1F
-    .byte $7E, $7F, $70, $61, $1F
+    .byte $7E, $7F, $7E, $77, $1F
+    .byte $7E, $3F, $7F, $6F, $1F
+    .byte $7E, $3F, $7F, $4D, $1F
+    .byte $7E, $5F, $7D, $04, $1C
+    .byte $7E, $1F, $7B, $00, $18
+    .byte $7E, $07, $34, $00, $10
+    .byte $7E, $03, $00, $00, $10
+    .byte $7E, $01, $00, $00, $10
+    .byte $7E, $30, $78, $30, $10
+    .byte $7E, $50, $37, $2F, $10
+    .byte $3E, $60, $4F, $1F, $00
+    .byte $3E, $61, $4C, $19, $08
+    .byte $3E, $61, $4C, $19, $08
+    .byte $3E, $6C, $4F, $5F, $03
+    .byte $7E, $5F, $37, $6F, $1F
+    .byte $7E, $3F, $78, $70, $1F
     .byte $7E, $7F, $7F, $7F, $1F
     .byte $7E, $7F, $7F, $7F, $1F
     .byte $7E, $7F, $7F, $7F, $1F
@@ -87,13 +87,13 @@ CARD_GFX_01
     .byte $00, $00, $00, $00, $00
     .byte $7E, $7F, $7F, $7F, $1F
     .byte $7E, $7F, $7F, $7F, $1F
-    .byte $06, $7F, $7F, $7F, $1F
-    .byte $76, $7E, $7F, $7F, $1F
-    .byte $76, $7E, $7F, $7F, $1F
-    .byte $06, $7F, $7F, $7F, $1F
-    .byte $76, $7F, $7F, $7F, $1F
-    .byte $76, $0F, $15, $7A, $1F
-    .byte $76, $6F, $55, $7B, $1F
+    .byte $0E, $7E, $7F, $7F, $1F
+    .byte $6E, $7D, $7F, $7F, $1F
+    .byte $6E, $7D, $7F, $7F, $1F
+    .byte $0E, $7E, $7F, $7F, $1F
+    .byte $6E, $7F, $7F, $7F, $1F
+    .byte $6E, $0F, $15, $7A, $1F
+    .byte $6E, $6F, $55, $7B, $1F
     .byte $7E, $0F, $15, $7A, $1F
     .byte $7E, $6F, $55, $7B, $1F
     .byte $76, $6F, $11, $62, $17
@@ -130,13 +130,13 @@ CARD_GFX_02
     .byte $00, $00, $00, $00, $00
     .byte $7E, $7F, $7F, $7F, $1F
     .byte $7E, $7F, $7F, $7F, $1F
-    .byte $0E, $3F, $7E, $7F, $1F
-    .byte $76, $5E, $7D, $7F, $1F
-    .byte $76, $6E, $7D, $7F, $1F
-    .byte $06, $76, $7D, $7F, $1F
-    .byte $76, $7A, $7D, $7F, $1F
-    .byte $76, $76, $7D, $7F, $1F
-    .byte $76, $6E, $7D, $7F, $1F
+    .byte $1E, $3E, $7E, $7F, $1F
+    .byte $6E, $5D, $7D, $7F, $1F
+    .byte $6E, $6D, $7D, $7F, $1F
+    .byte $0E, $74, $7D, $7F, $1F
+    .byte $6E, $7D, $7D, $7F, $1F
+    .byte $6E, $75, $7D, $7F, $1F
+    .byte $6E, $6D, $7D, $7F, $1F
     .byte $7E, $4F, $7D, $7F, $1F
     .byte $7E, $17, $0C, $7E, $1F
     .byte $7E, $67, $07, $7E, $1F
@@ -173,13 +173,13 @@ CARD_GFX_03
     .byte $00, $00, $00, $00, $00
     .byte $7E, $7F, $7F, $7F, $1F
     .byte $7E, $7F, $7F, $7F, $1F
-    .byte $0E, $7E, $7F, $7F, $1F
-    .byte $76, $7F, $7F, $7F, $1F
-    .byte $76, $7F, $7F, $7F, $1F
-    .byte $76, $7F, $7F, $7F, $1F
-    .byte $76, $7F, $7F, $7F, $1F
-    .byte $76, $7F, $7F, $7F, $1F
-    .byte $0E, $7E, $7F, $7F, $1F
+    .byte $1E, $7C, $7F, $7F, $1F
+    .byte $6E, $7F, $7F, $7F, $1F
+    .byte $6E, $7F, $7F, $7F, $1F
+    .byte $6E, $7F, $7F, $7F, $1F
+    .byte $6E, $7F, $7F, $7F, $1F
+    .byte $6E, $7F, $7F, $7F, $1F
+    .byte $1E, $7C, $7F, $7F, $1F
     .byte $7E, $7F, $7F, $7F, $1F
     .byte $7E, $7F, $7F, $7F, $1F
     .byte $7E, $7F, $00, $7F, $1F
@@ -216,13 +216,13 @@ CARD_GFX_04
     .byte $00, $00, $00, $00, $00
     .byte $7E, $7F, $7F, $7F, $1F
     .byte $7E, $7F, $7F, $7F, $1F
-    .byte $76, $7F, $7F, $7F, $1F
-    .byte $76, $7F, $7F, $7F, $1F
-    .byte $76, $7F, $7F, $7F, $1F
-    .byte $76, $7F, $7F, $7F, $1F
-    .byte $76, $7F, $7F, $7F, $1F
-    .byte $76, $7F, $61, $7F, $1F
-    .byte $06, $3E, $1E, $7F, $1F
+    .byte $6E, $7F, $7F, $7F, $1F
+    .byte $6E, $7F, $7F, $7F, $1F
+    .byte $6E, $7F, $7F, $7F, $1F
+    .byte $6E, $7F, $7F, $7F, $1F
+    .byte $6E, $7F, $7F, $7F, $1F
+    .byte $6E, $7F, $61, $7F, $1F
+    .byte $0E, $3C, $1E, $7F, $1F
     .byte $7E, $5F, $7F, $7E, $1F
     .byte $7E, $6F, $7F, $7D, $1F
     .byte $7E, $37, $18, $7B, $1F
@@ -259,13 +259,13 @@ CARD_GFX_05
     .byte $00, $00, $00, $00, $00
     .byte $7E, $7F, $7F, $7F, $1F
     .byte $7E, $7F, $7F, $7F, $1F
-    .byte $06, $7F, $7F, $7F, $1F
-    .byte $76, $7E, $7F, $7F, $1F
-    .byte $76, $7E, $7F, $7F, $1F
-    .byte $06, $7F, $7F, $7F, $1F
-    .byte $56, $7F, $7F, $7F, $1F
-    .byte $36, $07, $00, $7C, $1F
-    .byte $76, $06, $0B, $7E, $1F
+    .byte $0E, $7E, $7F, $7F, $1F
+    .byte $6E, $7D, $7F, $7F, $1F
+    .byte $6E, $7D, $7F, $7F, $1F
+    .byte $0E, $7E, $7F, $7F, $1F
+    .byte $2E, $7F, $7F, $7F, $1F
+    .byte $6E, $06, $00, $7C, $1F
+    .byte $6E, $05, $0B, $7E, $1F
     .byte $7E, $C7, $AA, $7F, $1F
     .byte $7E, $C7, $FA, $7F, $1F
     .byte $7E, $C7, $FA, $7F, $1F
@@ -302,13 +302,13 @@ CARD_GFX_06
     .byte $00, $00, $00, $00, $00
     .byte $7E, $7F, $7F, $7F, $1F
     .byte $7E, $7F, $7F, $7F, $1F
-    .byte $06, $7E, $7F, $7F, $1F
-    .byte $76, $7F, $7F, $7F, $1F
-    .byte $76, $7F, $7F, $7F, $1F
-    .byte $06, $7F, $7F, $7F, $1F
-    .byte $76, $7F, $7F, $7F, $1F
-    .byte $76, $03, $00, $70, $1F
-    .byte $06, $02, $00, $70, $1F
+    .byte $0E, $7C, $7F, $7F, $1F
+    .byte $6E, $7F, $7F, $7F, $1F
+    .byte $6E, $7F, $7F, $7F, $1F
+    .byte $0E, $7E, $7F, $7F, $1F
+    .byte $6E, $7F, $7F, $7F, $1F
+    .byte $6E, $07, $00, $70, $1F
+    .byte $0E, $04, $00, $70, $1F
     .byte $7E, $73, $4E, $63, $1F
     .byte $7E, $73, $4E, $43, $1F
     .byte $7E, $73, $4E, $13, $1F
@@ -345,13 +345,13 @@ CARD_GFX_07
     .byte $00, $00, $00, $00, $00
     .byte $7E, $7F, $7F, $7F, $1F
     .byte $7E, $7F, $7F, $7F, $1F
-    .byte $06, $7F, $7F, $7F, $1F
-    .byte $76, $7E, $00, $7F, $1F
-    .byte $76, $3E, $00, $7E, $1F
-    .byte $06, $3F, $7F, $7E, $1F
-    .byte $56, $5F, $7F, $7D, $1F
-    .byte $36, $5F, $7F, $7D, $1F
-    .byte $76, $6E, $7F, $7B, $1F
+    .byte $0E, $7E, $7F, $7F, $1F
+    .byte $6E, $7D, $00, $7F, $1F
+    .byte $6E, $3D, $00, $7E, $1F
+    .byte $0E, $3E, $7F, $7E, $1F
+    .byte $2E, $5F, $7F, $7D, $1F
+    .byte $6E, $5E, $7F, $7D, $1F
+    .byte $6E, $6D, $7F, $7B, $1F
     .byte $5E, $6F, $3F, $73, $1F
     .byte $3E, $37, $1F, $01, $1F
     .byte $3E, $67, $1E, $00, $1E
@@ -388,13 +388,13 @@ CARD_GFX_08
     .byte $00, $00, $00, $00, $00
     .byte $7E, $7F, $7F, $7F, $1F
     .byte $7E, $7F, $7F, $7F, $1F
-    .byte $0E, $7E, $7F, $7F, $1F
-    .byte $76, $7F, $7F, $7F, $1F
-    .byte $0E, $7F, $7F, $7F, $1F
-    .byte $7E, $7E, $7F, $7F, $1F
-    .byte $7E, $7E, $7F, $7F, $1F
-    .byte $76, $7E, $40, $7F, $1F
-    .byte $0E, $1F, $00, $7E, $1F
+    .byte $1E, $7C, $7F, $7F, $1F
+    .byte $6E, $7F, $7F, $7F, $1F
+    .byte $1E, $7E, $7F, $7F, $1F
+    .byte $7E, $7D, $7F, $7F, $1F
+    .byte $7E, $7D, $7F, $7F, $1F
+    .byte $6E, $7D, $40, $7F, $1F
+    .byte $1E, $1E, $00, $7E, $1F
     .byte $7E, $0F, $00, $7C, $1F
     .byte $7E, $03, $00, $70, $1F
     .byte $7E, $01, $00, $60, $1F
@@ -431,13 +431,13 @@ CARD_GFX_09
     .byte $00, $00, $00, $00, $00
     .byte $7E, $7F, $7F, $7F, $1F
     .byte $7E, $7F, $7F, $7F, $1F
-    .byte $06, $7E, $7F, $7F, $1F
-    .byte $76, $7F, $7F, $7F, $1F
-    .byte $76, $7F, $7F, $7F, $1F
-    .byte $06, $7F, $7F, $7F, $1F
-    .byte $76, $7F, $7F, $7F, $1F
-    .byte $76, $7F, $61, $7F, $1F
-    .byte $76, $3F, $1E, $7F, $1F
+    .byte $0E, $7C, $7F, $7F, $1F
+    .byte $6E, $7F, $7F, $7F, $1F
+    .byte $6E, $7F, $7F, $7F, $1F
+    .byte $0E, $7E, $7F, $7F, $1F
+    .byte $6E, $7F, $7F, $7F, $1F
+    .byte $6E, $7F, $61, $7F, $1F
+    .byte $6E, $3F, $1E, $7F, $1F
     .byte $7E, $5F, $3F, $7E, $1F
     .byte $7E, $6F, $1F, $7C, $1F
     .byte $7E, $77, $0F, $78, $1F
@@ -474,13 +474,13 @@ CARD_GFX_10
     .byte $00, $00, $00, $00, $00
     .byte $7E, $7F, $7F, $7F, $1F
     .byte $7E, $7F, $7F, $7F, $1F
-    .byte $76, $7E, $7F, $7F, $1F
-    .byte $76, $7E, $7F, $7F, $1F
-    .byte $76, $7E, $7F, $7F, $1F
-    .byte $76, $7E, $7F, $7F, $1F
-    .byte $2E, $7F, $7F, $7F, $1F
-    .byte $2E, $07, $00, $7C, $1F
-    .byte $5E, $07, $0B, $7E, $1F
+    .byte $6E, $7D, $7F, $7F, $1F
+    .byte $6E, $7D, $7F, $7F, $1F
+    .byte $6E, $7D, $7F, $7F, $1F
+    .byte $6E, $7D, $7F, $7F, $1F
+    .byte $5E, $7E, $7F, $7F, $1F
+    .byte $5E, $06, $00, $7C, $1F
+    .byte $3E, $07, $0B, $7E, $1F
     .byte $7E, $47, $0F, $7F, $1F
     .byte $7E, $67, $5F, $7F, $1F
     .byte $7E, $67, $7F, $7F, $1F
@@ -730,13 +730,13 @@ CARD_GFX_15
 ; Carte 16 : 16_CITERNE_ESSENCE (200 octets, 5 octets x 40 lignes)
 CARD_GFX_16
     .byte $00, $00, $00, $00, $00
-    .byte $2E, $6F, $7F, $7E, $1A
-    .byte $5E, $6F, $7F, $7E, $1D
+    .byte $7E, $7F, $7F, $7F, $1F
+    .byte $2E, $1F, $1E, $78, $1A
+    .byte $5E, $6F, $7D, $7E, $1D
     .byte $06, $6E, $7F, $3E, $10
     .byte $5E, $6F, $7F, $7E, $1D
-    .byte $2E, $6F, $7F, $7E, $1A
-    .byte $7E, $1F, $3C, $7C, $1F
-    .byte $7E, $7F, $7F, $7F, $1F
+    .byte $2E, $6F, $7D, $7E, $1A
+    .byte $7E, $1F, $1E, $78, $1F
     .byte $7E, $7F, $7F, $7F, $1F
     .byte $7E, $7F, $7F, $7F, $1F
     .byte $7E, $7F, $3F, $1C, $1E
@@ -760,27 +760,26 @@ CARD_GFX_16
     .byte $02, $18, $7B, $6F, $0C
     .byte $0E, $78, $7B, $6F, $0F
     .byte $7E, $77, $7D, $5F, $17
-    .byte $7E, $0F, $7E, $3F, $18
-    .byte $7E, $1F, $3C, $7C, $1F
-    .byte $2E, $6F, $7F, $7E, $1A
-    .byte $5E, $6F, $7F, $7E, $1D
+    .byte $7E, $7F, $7F, $7F, $1F
+    .byte $2E, $1F, $1E, $78, $1A
+    .byte $5E, $6F, $7D, $7E, $1D
     .byte $06, $6E, $7F, $3E, $10
     .byte $5E, $6F, $7F, $7E, $1D
-    .byte $2E, $6F, $7F, $7E, $1A
-    .byte $7E, $1F, $3C, $7C, $1F
+    .byte $2E, $6F, $7D, $7E, $1A
+    .byte $7E, $1F, $1E, $78, $1F
+    .byte $7E, $7F, $7F, $7F, $1F
     .byte $00, $00, $00, $00, $00
 
 ; Carte 17 : 17_AS_DU_VOLANT (200 octets, 5 octets x 40 lignes)
 CARD_GFX_17
     .byte $00, $00, $00, $00, $00
-    .byte $2E, $6F, $5D, $7B, $1A
+    .byte $7E, $7F, $7F, $7F, $1F
+    .byte $2E, $1F, $5E, $7B, $1A
     .byte $5E, $6F, $5D, $7B, $1D
-    .byte $06, $0E, $5C, $3B, $10
-    .byte $5E, $6F, $3D, $7D, $1D
+    .byte $06, $6E, $5D, $3B, $10
+    .byte $5E, $0F, $5C, $7B, $1D
     .byte $2E, $6F, $3D, $7D, $1A
     .byte $7E, $6F, $7D, $7E, $1F
-    .byte $7E, $7F, $7F, $7F, $1F
-    .byte $7E, $7F, $7F, $7F, $1F
     .byte $7E, $7F, $7F, $7F, $1F
     .byte $7E, $7F, $7F, $7F, $1F
     .byte $7E, $7F, $0F, $7F, $1F
@@ -804,25 +803,26 @@ CARD_GFX_17
     .byte $7E, $70, $63, $47, $1F
     .byte $7E, $4F, $1B, $77, $1F
     .byte $7E, $3F, $7C, $78, $1F
-    .byte $7E, $1F, $5E, $7B, $1F
-    .byte $2E, $6F, $5D, $7B, $1A
+    .byte $7E, $7F, $7F, $7F, $1F
+    .byte $2E, $1F, $5E, $7B, $1A
     .byte $5E, $6F, $5D, $7B, $1D
-    .byte $06, $0E, $5C, $3B, $10
-    .byte $5E, $6F, $3D, $7D, $1D
+    .byte $06, $6E, $5D, $3B, $10
+    .byte $5E, $0F, $5C, $7B, $1D
     .byte $2E, $6F, $3D, $7D, $1A
     .byte $7E, $6F, $7D, $7E, $1F
+    .byte $7E, $7F, $7F, $7F, $1F
     .byte $00, $00, $00, $00, $00
 
 ; Carte 18 : 18_INCREVABLE (200 octets, 5 octets x 40 lignes)
 CARD_GFX_18
     .byte $00, $00, $00, $00, $00
-    .byte $2E, $3F, $1F, $7B, $1A
-    .byte $5E, $3F, $5F, $7A, $1D
-    .byte $06, $3E, $5F, $39, $10
-    .byte $5E, $3F, $5F, $7B, $1D
-    .byte $2E, $3F, $5F, $7B, $1A
-    .byte $7E, $1F, $5E, $7B, $1F
     .byte $7E, $7F, $7F, $7F, $1F
+    .byte $2E, $0F, $5C, $7B, $1A
+    .byte $5E, $3F, $1F, $7B, $1D
+    .byte $06, $3E, $5F, $3A, $10
+    .byte $5E, $3F, $5F, $79, $1D
+    .byte $2E, $3F, $5F, $7B, $1A
+    .byte $7E, $0F, $5C, $7B, $1F
     .byte $7E, $7F, $7F, $7F, $1F
     .byte $7E, $7F, $7F, $7F, $1F
     .byte $7E, $7F, $7F, $7F, $1F
@@ -846,27 +846,26 @@ CARD_GFX_18
     .byte $7E, $31, $6F, $01, $1F
     .byte $3E, $1B, $46, $43, $1F
     .byte $7E, $3E, $6F, $67, $1F
-    .byte $7E, $45, $08, $71, $1F
-    .byte $7E, $1F, $5E, $7B, $1F
-    .byte $2E, $3F, $1F, $7B, $1A
-    .byte $5E, $3F, $5F, $7A, $1D
-    .byte $06, $3E, $5F, $39, $10
-    .byte $5E, $3F, $5F, $7B, $1D
+    .byte $7E, $7F, $7F, $7F, $1F
+    .byte $2E, $0F, $5C, $7B, $1A
+    .byte $5E, $3F, $1F, $7B, $1D
+    .byte $06, $3E, $5F, $3A, $10
+    .byte $5E, $3F, $5F, $79, $1D
     .byte $2E, $3F, $5F, $7B, $1A
-    .byte $7E, $1F, $5E, $7B, $1F
+    .byte $7E, $0F, $5C, $7B, $1F
+    .byte $7E, $7F, $7F, $7F, $1F
     .byte $00, $00, $00, $00, $00
 
 ; Carte 19 : 19_VEHICULE_PRIORITAIRE (200 octets, 5 octets x 40 lignes)
 CARD_GFX_19
     .byte $00, $00, $00, $00, $00
-    .byte $2E, $6F, $5D, $7B, $1A
-    .byte $5E, $6F, $5D, $7B, $1D
-    .byte $06, $6E, $1D, $3C, $10
-    .byte $5E, $5F, $5E, $7F, $1D
-    .byte $2E, $5F, $5E, $7F, $1A
-    .byte $7E, $3F, $5F, $7F, $1F
     .byte $7E, $7F, $7F, $7F, $1F
-    .byte $5E, $56, $2A, $55, $1E
+    .byte $2E, $6F, $1D, $7C, $1A
+    .byte $5E, $6F, $5D, $7B, $1D
+    .byte $06, $6E, $5D, $3B, $10
+    .byte $5E, $6F, $1D, $7C, $1D
+    .byte $2E, $5F, $5E, $7F, $1A
+    .byte $5E, $16, $0A, $55, $1E
     .byte $0E, $00, $00, $00, $18
     .byte $6E, $6F, $7F, $5F, $1B
     .byte $7E, $6F, $7F, $5F, $17
@@ -890,13 +889,14 @@ CARD_GFX_19
     .byte $0E, $78, $73, $77, $1F
     .byte $7E, $77, $6D, $7B, $1F
     .byte $7E, $0F, $1E, $7C, $1F
-    .byte $7E, $6F, $1D, $7C, $1F
-    .byte $2E, $6F, $5D, $7B, $1A
+    .byte $7E, $7F, $7F, $7F, $1F
+    .byte $2E, $6F, $1D, $7C, $1A
     .byte $5E, $6F, $5D, $7B, $1D
-    .byte $06, $6E, $1D, $3C, $10
-    .byte $5E, $5F, $5E, $7F, $1D
+    .byte $06, $6E, $5D, $3B, $10
+    .byte $5E, $6F, $1D, $7C, $1D
     .byte $2E, $5F, $5E, $7F, $1A
     .byte $7E, $3F, $5F, $7F, $1F
+    .byte $7E, $7F, $7F, $7F, $1F
     .byte $00, $00, $00, $00, $00
 
 ; Carte 20 : 20_SLOT_EMPTY (Cadre vide, 200 octets)

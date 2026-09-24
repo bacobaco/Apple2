@@ -1,4 +1,5 @@
 @echo off
+cd /d "%~dp0"
 echo ========================================================
 echo   Compilation et injection des Flappy Birds pour Apple II
 echo ========================================================

@@ -97,9 +97,9 @@ def main():
         # Milestones: +3 pixels right
         # Traffic lights: +2 pixels right
         shift_x = 0
-        if c_idx in (0, 11, 12, 13, 14, 15):
+        if c_idx in (11, 12, 13, 14, 15):
             shift_x = 3
-        elif c_idx in (5, 10):
+        elif c_idx in (0, 5, 10):
             shift_x = 2
 
         # Apple II HGR grid: 35 wide, 40 high
@@ -134,20 +134,21 @@ def main():
             if c_idx == 2:
                 bm_tl = [0x1C, 0x22, 0x22, 0x3E, 0x22, 0x22, 0x22, 0] # Closed 'A'
 
-            # Clear top-left corner area: lines 1..9, x in 1..8
+            # Clear top-left corner area: lines 1..9, x in 1..9
             for y in range(1, 10):
-                for x in range(1, 9):
+                for x in range(1, 10):
                     if y < 8 or (c_idx not in (5, 10)):
                         grid[y][x] = 1 # White background
 
-            # Descend top-left letter by 2 pixels:
+            # Descend top-left letter by 2 pixels, shifted 1 pixel right (x=2+bit) to decouple from border:
             # Lines 1 and 2 remain 1 (white)!
             # Lines 3..9 get the letter (rows 0..6):
             for row in range(7):
                 b = bm_tl[row]
                 for bit in range(8):
                     if b & (1 << (7 - bit)):
-                        grid[3 + row][1 + bit] = 0 # Black ink for letter
+                        if 2 + bit < 33:
+                            grid[3 + row][2 + bit] = 0 # Black ink for letter
 
             # Bottom-right corner:
             # Move UP by 1 pixel (lines 31..37 instead of 32..38), shift left 1 pixel (x in 24..31)
@@ -164,7 +165,67 @@ def main():
                 b = bm_br[row]
                 for bit in range(8):
                     if b & (1 << (7 - bit)):
-                        grid[31 + row][24 + bit] = 0 # Black ink
+                        if 24 + bit < 33:
+                            grid[31 + row][24 + bit] = 0 # Black ink
+
+        # Dedicated typography & spacing for the 4 Bottes (Cards 16..19)
+        if 16 <= c_idx <= 19:
+            font_6x5 = {
+                '*': [0b01010, 0b00100, 0b11111, 0b00100, 0b01010, 0b00000],
+                'C': [0b01110, 0b10001, 0b10000, 0b10000, 0b10001, 0b01110],
+                'I': [0b11111, 0b00100, 0b00100, 0b00100, 0b00100, 0b11111],
+                'A': [0b01110, 0b10001, 0b10001, 0b11111, 0b10001, 0b10001],
+                'V': [0b10001, 0b10001, 0b10001, 0b10001, 0b01010, 0b00100],
+                'N': [0b10001, 0b11001, 0b10101, 0b10011, 0b10001, 0b10001],
+                'P': [0b11110, 0b10001, 0b10001, 0b11110, 0b10000, 0b10000]
+            }
+            # Clear top area (lines 1..8) and bottom area (lines 31..38)
+            for y in range(1, 9):
+                for x in range(1, 33):
+                    grid[y][x] = 1
+            for y in range(31, 39):
+                for x in range(1, 33):
+                    grid[y][x] = 1
+
+            # Clear and re-copy central illustration cleanly (lines 8..30)
+            for y in range(8, 31):
+                for x in range(1, 33):
+                    grid[y][x] = 1
+
+            y_offset = -1 if c_idx in (17, 19) else 0
+            for y in range(8, 32):
+                target_y = y + y_offset
+                if 7 <= target_y <= 30:
+                    for x in range(32):
+                        if px32[y][x]:
+                            if x + 1 < 33:
+                                grid[target_y][x + 1] = 0
+
+            botte_chars = {
+                16: ('C', 'I'),
+                17: ('A', 'V'),
+                18: ('I', 'N'),
+                19: ('V', 'P')
+            }
+            c1, c2 = botte_chars[c_idx]
+            botte_text_chars = ['*', c1, c2, '*']
+            xs = [3, 11, 19, 27]
+
+            # Top text: lines 2..7 (leaving line 1 as white margin!)
+            for r in range(6):
+                for ch, start_x in zip(botte_text_chars, xs):
+                    pat = font_6x5[ch][r]
+                    for bit in range(5):
+                        if pat & (1 << (4 - bit)):
+                            grid[2 + r][start_x + bit] = 0
+
+            # Bottom text: lines 32..37 (leaving line 38 as white margin!)
+            for r in range(6):
+                for ch, start_x in zip(botte_text_chars, xs):
+                    pat = font_6x5[ch][r]
+                    for bit in range(5):
+                        if pat & (1 << (4 - bit)):
+                            grid[32 + r][start_x + bit] = 0
 
         # Convert 35 pixels to 5 bytes per row
         raw_bytes = []
