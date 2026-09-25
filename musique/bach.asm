@@ -80,9 +80,15 @@ PTR_TXT_H = $1B
 ; POINT D'ENTREE PRINCIPAL
 ; ===================================================================
 START:
-    STA TEXTMODE
-    STA PAGE1
-    STA NOMIXED
+    TSX
+    STX SAVED_SP        ; Sauvegarde le pointeur de pile de DOS / BASIC
+    STA TEXTMODE        ; Bascule affichage texte ($C051)
+    STA NOMIXED         ; Plein ecran texte ($C052)
+    STA PAGE1           ; Page 1 ($C054)
+    BIT $C056           ; Lo-res (clears hires $C057)
+    LDA #$FF
+    STA $32             ; Normal text mode (White on Black, INVFLG = $FF)
+    JSR $FB2F           ; SETTXT: Fenetre texte 40x24 (0, 40, 0, 24)
 
 SHOW_MENU:
     JSR HOME
@@ -98,27 +104,72 @@ WAIT_INPUT:
     AND #$7F            ; Ignore bit 7
 
     CMP #'1'
-    BEQ PLAY_PIECE_1
-    CMP #'2'
-    BEQ PLAY_PIECE_2
-    CMP #'3'
-    BEQ PLAY_PIECE_3
-    CMP #'4'
-    BEQ PLAY_PIECE_4
-    CMP #'5'
-    BEQ PLAY_PIECE_5
-    CMP #'Q'
+    BNE +
+    JMP PLAY_PIECE_1
++   CMP #'2'
+    BNE +
+    JMP PLAY_PIECE_2
++   CMP #'3'
+    BNE +
+    JMP PLAY_PIECE_3
++   CMP #'4'
+    BNE +
+    JMP PLAY_PIECE_4
++   CMP #'5'
+    BNE +
+    JMP PLAY_PIECE_5
++   CMP #'Q'
     BEQ EXIT_TO_DOS
     CMP #'q'
     BEQ EXIT_TO_DOS
     CMP #$1B            ; ESC
     BEQ EXIT_TO_DOS
 
-    BNE WAIT_INPUT
+    JMP WAIT_INPUT
 
 EXIT_TO_DOS:
-    JSR HOME
-    RTS                 ; Retour propre a Applesoft / DOS 3.3
+    STA KBDSTRB         ; Acquitte le strobe clavier
+    STA TEXTMODE        ; Mode texte ($C051)
+    STA NOMIXED         ; Plein ecran ($C052)
+    STA PAGE1           ; Page 1 ($C054)
+    BIT $C056           ; Lo-res
+    LDA #$FF
+    STA $32             ; INVFLG = $FF
+    JSR $FB2F           ; SETTXT: Fenetre pleine 40x24
+    JSR HOME            ; Efface l'ecran et place curseur en (0,0)
+    STA KBDSTRB
+    LDX SAVED_SP
+    TXS                 ; Restaure la pile de DOS 3.3
+    CLI                 ; Reautorise les interruptions
+
+    ; Lance la commande DOS 3.3 : CR, Ctrl-D, "RUN HELLO", CR
+    ; Relance instantanement et proprement le menu interactif Applesoft HELLO !
+    LDX #0
+-   LDA DOS_CMD_RUN_HELLO, X
+    BEQ +
+    JSR COUT            ; Envoie au DOS 3.3 via le vecteur de sortie
+    INX
+    BNE -
++   ; Si pas de DOS hook actif : bascule propre vers le prompt BASIC ']'
+    JMP $E003
+
+SAVED_SP:
+    .byte $FF
+
+DOS_CMD_RUN_HELLO:
+    .byte $8D           ; Carriage Return
+    .byte $84           ; Ctrl-D (Interception commande DOS 3.3)
+    .byte 'R' | $80
+    .byte 'U' | $80
+    .byte 'N' | $80
+    .byte ' ' | $80
+    .byte 'H' | $80
+    .byte 'E' | $80
+    .byte 'L' | $80
+    .byte 'L' | $80
+    .byte 'O' | $80
+    .byte $8D           ; Carriage Return (execution immediate)
+    .byte 0
 
 ; ===================================================================
 ; LECTURE PIECE 1 : BWV 847 (FUGA II EN DO MINEUR)
@@ -423,7 +474,7 @@ MENU_TEXT:
     .text " [3] THE BEATLES : HEY JUDE (1968)", $0D
     .text " [4] THE BEATLES : LET IT BE (1970)", $0D
     .text " [5] THE BEATLES : I WANT YOU (1969)", $0D
-    .text " [Q] QUITTER VERS LE DOS 3.3", $0D
+    .text " [Q] RETOUR AU MENU PRINCIPAL (HELLO)", $0D
     .text "----------------------------------------", $0D
     .text "VOTRE CHOIX [1..5, Q] ? ", $00
 
