@@ -131,14 +131,14 @@ Issue du Livre 1 du *Clavecin bien tempéré* (1722) :
   3. *Développement central* : Réexpositions en Sol mineur et Do mineur (mesures 15-26), alternance virtuose des motifs thématiques.
   4. *Coda et Pédale finale* : Pédale de tonique, strette et résolution solennelle sur l'accord final picard (mesures 27-31).
 
-### 2. T. Albinoni / R. Giazotto — Adagio en Sol mineur (~1.52 min)
-Le célèbre Adagio baroque en Sol mineur pour cordes et orgue :
-* **59 événements musicaux** à ~83 BPM (~1 minute 31 secondes de musique).
+### 2. T. Albinoni / R. Giazotto — Adagio en Sol mineur (~1.27 min)
+Le célèbre Adagio baroque en Sol mineur pour cordes et orgue, transcrit avec une rigueur rythmique et mélodique absolue :
+* **80 événements musicaux** à 52 BPM (~1 minute 16 secondes de musique, 22 mesures complètes en 3/4).
 * **Tonalité originale** : Sol mineur (Gm, Eb, Cm, D7).
-* **Harmonie et contrepoint à deux voix** :
-  1. *Pizzicato de basse et orgue* : Marche noble et régulière de basse soutenant le thème.
-  2. *Chant élégiaque au violon solo* : Thème mélancolique avec ses montées expressives, trilles et appoggiatures.
-  3. *Développement harmonique* : Modulations dramatiques vers Mi♭ majeur et Do mineur, avant la cadence finale suspendue.
+* **Richesse rythmique & contrepoint fidèle note pour note** :
+  1. *Rythme baroque authentique au violon solo* : Respect scrupuleux des croches pointées suivies de doubles croches (180 ticks / 60 ticks), des triolets de croches (80 ticks) et de la grande envolée lyrique expressive au sommet dramatique en Ré5.
+  2. *Basso continuo & pizzicato pulsé* : Marche noble de basse alternant scrupuleusement l'octave basse/haute/basse sur chaque temps de la mesure (Sol2 -> Sol3 -> Sol2, etc.), avec la pédale de dominante en Ré sur l'envolée du violon.
+  3. *Cadence solennelle* : Résolution complète sur le Sol mineur final (Do5 -> Si♭4 -> La4 -> Sol4) parfaitement synchronisée entre les deux voix.
 
 ### 3. The Beatles — Hey Jude (Paul McCartney, 1968)
 Le chef-d'œuvre universellement célébré des Beatles (single Apple Records) :
@@ -192,7 +192,7 @@ python make_ai_asm.py
    ```
 4. Menu interactif :
    * Touche **`1`** : J.S. Bach — *Fugue II en Do mineur* (BWV 847) - Complète (31 mesures)
-   * Touche **`2`** : T. Albinoni — *Adagio en Sol mineur* (~1.5 min)
+   * Touche **`2`** : T. Albinoni — *Adagio en Sol mineur* (~1.27 min)
    * Touche **`3`** : The Beatles — *Hey Jude* (1968)
    * Touche **`4`** : The Beatles — *Let It Be* (1970)
    * Touche **`5`** : The Beatles — *I Want You (She's So Heavy)* (1969)

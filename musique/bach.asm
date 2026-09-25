@@ -452,11 +452,11 @@ PLAY_ALBINONI_TEXT:
     .text "***     LECTURE EN COURS (2 VOIX)    ***", $0D
     .text "========================================", $0D
     .text $0D
-    .text "OEUVRE : ADAGIO EN SOL MINEUR (~1.5 MIN)", $0D
+    .text "OEUVRE : ADAGIO EN SOL MINEUR (~1.27 MIN)", $0D
     .text "AUTEUR : TOMASO ALBINONI / R. GIAZOTTO", $0D
     .text $0D
     .text "VOIX 1 : VIOLON SOLO LYRIQUE & EXPRESSIF", $0D
-    .text "VOIX 2 : BASSE CONTINUE D'ORGUE (PEDALE)", $0D
+    .text "VOIX 2 : BASSE CONTINUE PIZZICATO & ORGUE", $0D
     .text $0D
     .text "PORTEUSE : 12 937 HZ SUR LE HP ($C030)", $0D
     .text "DECOUPE  : PWM 50% / MULTIPLEXAGE TDM", $0D
