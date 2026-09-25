@@ -4,7 +4,13 @@
 ; Termine par .byte $00, $00, $00
 ; ===================================================================
 
-; --- 1. J.S. BACH - FUGA II EN DO MINEUR (BWV 847) ---
+; ===================================================================
+; 1. J.S. BACH - FUGA II EN DO MINEUR (BWV 847) COMPLETE
+; 31 mesures completes du Clavecin bien tempere (Livre 1, 1722)
+; Sujet Alto, Reponse Soprano, Entree Basse, 4 episodes, Climax Picardie
+; 397 evenements
+; Format : .byte DUREE, PERIODE_VOIX1, PERIODE_VOIX2
+; ===================================================================
 BWV847_SCORE:
     .byte  18,   0,   0
     .byte   9,   0,  24
@@ -26,8 +32,8 @@ BWV847_SCORE:
     .byte  36,   0,  30
     .byte   9,   0,  32
     .byte   9,   0,  36
-    .byte   9,   0,  40
-    .byte   9,   0,  24
+    .byte   9,  40,   0
+    .byte   9,  24,   0
     .byte   9,  16,  26
     .byte   9,  17,  29
     .byte   9,  16,  32
@@ -62,116 +68,418 @@ BWV847_SCORE:
     .byte   9,  18,  30
     .byte   9,  20,  30
     .byte   9,  18,  30
-    .byte   9,  18,  86
-    .byte   9,  29,  81
-    .byte   9,  29,  72
-    .byte   9,  27,  64
-    .byte   9,  27,  57
-    .byte   9,  16,  54
-    .byte   9,  18,  54
-    .byte   9,  16,  54
-    .byte   9,  16,  81
+    .byte   9,  18,  43
+    .byte   9,  29,  40
+    .byte   9,  29,  36
+    .byte   9,  27,  32
+    .byte   9,  27,  29
+    .byte   9,  16,  27
+    .byte   9,  18,  27
+    .byte   9,  16,  27
+    .byte   9,  16,  40
+    .byte   9,  26,  36
+    .byte   9,  26,  32
+    .byte   9,  24,  30
+    .byte   9,  24,  32
+    .byte   9,  21,  36
+    .byte   9,  20,  40
+    .byte  18,  18,  43
+    .byte   9,  18,  24
+    .byte   9,  18,  26
+    .byte  18,  18,  24
+    .byte   9,  20,  48
+    .byte   9,  21,  51
+    .byte   9,  24,  48
+    .byte   9,  27,  48
+    .byte   9,  30,  64
+    .byte   9,  32,  64
+    .byte  18,  36,  61
+    .byte   9,  15,  48
+    .byte   9,  15,  51
+    .byte  18,  16,  48
+    .byte  18,  18,  43
+    .byte  18,  20,  64
+    .byte   9,  21,  48
+    .byte   9,  21,  51
+    .byte  18,  20,  48
+    .byte  18,  18,  43
     .byte   9,  26,  72
     .byte   9,  26,  64
-    .byte   9,  24,  61
-    .byte   9,  24,  64
+    .byte  18,  24,  61
+    .byte  18,  21,  61
+    .byte   9,  26,  64
+    .byte   9,  26,  72
+    .byte   9,  24,  81
+    .byte   9,  24,  48
+    .byte   9,  16,  51
+    .byte   9,  17,  57
+    .byte   9,  16,  64
+    .byte   9,  16,  72
+    .byte   9,  21,  81
+    .byte   9,  21,  86
+    .byte   9,  20,  96
+    .byte   9,  20,  86
+    .byte   9,  20,  81
+    .byte   9,  20,  86
+    .byte   9,  24,  96
+    .byte   9,  24,  54
+    .byte   9,  19,  60
+    .byte   9,  19,  64
+    .byte   9,  18,  72
+    .byte   9,  18,  54
+    .byte   9,  18,  61
+    .byte   9,  19,  64
+    .byte   9,  18,  72
+    .byte   9,  18,  81
+    .byte   9,  24,  86
+    .byte   9,  24,  96
+    .byte   9,  21,  54
+    .byte   9,  21,  96
+    .byte   9,  21,  86
+    .byte   9,  21,  96
+    .byte   9,  27,  54
+    .byte   9,  27,  60
+    .byte   9,  21,  64
     .byte   9,  21,  72
     .byte   9,  20,  81
-    .byte  18,  18,  86
-    .byte   9,  18,  48
-    .byte   9,  18,  51
-    .byte  18,  18,  48
-    .byte   9,  20,  48
-    .byte   9,  21,  48
-    .byte   9,  24,   0
-    .byte   9,  27,   0
-    .byte   9,  30,   0
-    .byte   9,  32,   0
-    .byte  18,  36,   0
-    .byte   9,  15,  24
-    .byte   9,  15,  26
-    .byte  18,  16,  24
-    .byte  18,  18,  32
-    .byte  18,  20,  30
-    .byte   9,  21,  24
-    .byte   9,  21,  26
-    .byte  18,  20,  24
-    .byte  18,  18,  21
-    .byte  18,  26,  32
-    .byte   9,  24,  24
-    .byte   9,  24,  26
-    .byte  18,  21,  24
-    .byte  18,  26,  21
-    .byte   9,  24,  36
-    .byte   9,  24,  32
-    .byte   9,  16,  30
-    .byte   9,  17,  30
-    .byte  18,  16,  30
-    .byte   9,  21,  32
-    .byte   9,  21,  36
-    .byte   9,  20,  40
-    .byte   9,  20,  24
-    .byte   9,  20,  26
-    .byte   9,  20,  29
-    .byte   9,   0,  32
-    .byte   9,   0,  36
-    .byte   9,  19,  40
-    .byte   9,  19,  43
-    .byte   9,  18,  48
-    .byte   9,  18,  43
-    .byte   9,  18,  40
-    .byte   9,  19,  43
-    .byte   9,  18,  48
-    .byte   9,  18,  54
-    .byte   9,  24,  61
-    .byte   9,  24,  64
-    .byte   9,  21,  72
-    .byte   9,  21,  27
-    .byte   9,  21,  30
-    .byte   9,  21,  32
-    .byte   9,   0,  36
-    .byte   9,   0,  40
-    .byte   9,  21,  43
-    .byte   9,  21,  48
-    .byte   9,  20,  54
-    .byte   9,  20,  48
-    .byte   9,  20,  43
-    .byte   9,  21,  48
-    .byte   9,  20,  54
     .byte   9,  20,  61
+    .byte   9,  20,  64
+    .byte   9,  21,  72
+    .byte   9,  20,  81
+    .byte   9,  20,  91
+    .byte   9,  27,  96
+    .byte   9,  27,  54
+    .byte  18,  24,  60
+    .byte   9,  20,  48
+    .byte   9,  21,  48
+    .byte  18,  20,  54
+    .byte  18,  18,  61
+    .byte  18,  27,  64
+    .byte   9,  20,  72
+    .byte   9,  21,  72
+    .byte  18,  20,  64
+    .byte  18,  18,  61
+    .byte   9,  30,  86
+    .byte   9,  27,  86
+    .byte  18,  24,  81
+    .byte  18,  24,  72
+    .byte   9,  27,  86
+    .byte   9,  30,  86
+    .byte   9,  32,  81
+    .byte   9,  40,  81
+    .byte   9,  36,  61
+    .byte   9,  32,  61
+    .byte   9,  30,  64
     .byte   9,  27,  64
-    .byte   9,  27,  72
+    .byte   9,  24,  72
+    .byte   9,  21,  72
+    .byte   9,  20,  64
+    .byte   9,  21,  64
     .byte   9,  24,  81
-    .byte   9,  24,  30
-    .byte   9,  20,  32
-    .byte   9,  21,  36
-    .byte   9,  20,  40
-    .byte   9,  20,  45
-    .byte   9,  18,  48
-    .byte   9,  18,  54
-    .byte  18,  27,  61
-    .byte   9,  20,  24
-    .byte   9,  21,  24
-    .byte  18,  20,  27
-    .byte  18,  18,  30
-    .byte   9,  30,  32
-    .byte   9,  27,  32
-    .byte  18,  24,  36
-    .byte  18,  24,  32
-    .byte   9,  27,  30
-    .byte   9,  30,  30
+    .byte   9,  21,  81
+    .byte   9,  20,  86
+    .byte   9,  18,  86
+    .byte   9,  16,  96
+    .byte   9,  14,  96
+    .byte   9,  14,  86
+    .byte   9,  36,  86
+    .byte   9,  32,  54
+    .byte   9,  30,  54
+    .byte   9,  27,  61
+    .byte   9,  24,  61
+    .byte   9,  21,  64
+    .byte   9,  19,  64
+    .byte   9,  18,  61
+    .byte   9,  20,  61
+    .byte   9,  21,  72
+    .byte   9,  20,  72
+    .byte   9,  18,  81
+    .byte   9,  16,  81
+    .byte   9,  14,  86
+    .byte   9,  13,  86
+    .byte  18,  12,  81
+    .byte   9,  13,  32
+    .byte   9,  14,  34
+    .byte   9,  16,  32
+    .byte   9,  18,  32
+    .byte   9,  20,  48
+    .byte   9,  21,  48
+    .byte  18,  24,  40
+    .byte  18,  20,  96
+    .byte  18,  21,  54
+    .byte  18,  24,  57
+    .byte  18,  27,  43
+    .byte  18,  29,  81
+    .byte  18,  27,  86
+    .byte  18,  24,  96
+    .byte  18,  34,  86
+    .byte   9,  32,  96
+    .byte   9,  32,  54
+    .byte  18,  29,  96
+    .byte  18,  34,  86
+    .byte  18,  32,  64
+    .byte   9,  21,  54
+    .byte   9,  24,  57
+    .byte  18,  21,  54
+    .byte   9,  38,  86
+    .byte   9,  34,  86
+    .byte   9,  32,  81
+    .byte   9,  29,  81
+    .byte   9,  19,  48
+    .byte   9,  21,  54
+    .byte  18,  19,  48
+    .byte   9,  36,  76
+    .byte   9,  32,  76
+    .byte   9,  29,  72
+    .byte   9,  27,  72
+    .byte   9,  17,  43
+    .byte   9,  19,  48
+    .byte  18,  17,  43
+    .byte   9,  32,  68
+    .byte   9,  29,  68
+    .byte  18,  27,  64
+    .byte   9,  32,  64
+    .byte   9,  36,  64
+    .byte   9,  32,  40
+    .byte   9,  32,  64
+    .byte   9,  64,  57
+    .byte   9,  64,  51
+    .byte   9,  61,  96
+    .byte   9,  61,  86
+    .byte   9,  29,  81
+    .byte   9,  32,  81
+    .byte   9,  29,  81
+    .byte   9,  29,  57
+    .byte   9,  57,  54
+    .byte   9,  57,  96
+    .byte   9,  54,  86
+    .byte   9,  54,  81
+    .byte   9,  26,  72
+    .byte   9,  29,  72
+    .byte   9,  26,  72
+    .byte   9,  26,  51
+    .byte   9,  51,  96
+    .byte   9,  51,  86
+    .byte   9,  48,  81
+    .byte   9,  36,  81
+    .byte   9,  24,  40
+    .byte   9,  26,  43
+    .byte   9,  24,  48
+    .byte   9,  24,  54
+    .byte  18,  32,  76
+    .byte  18,  30,  72
+    .byte   9,  24,  72
+    .byte   9,  26,  72
+    .byte  18,  24,  81
+    .byte  18,  21,  86
+    .byte  18,  32,  40
+    .byte   9,  24,  60
+    .byte   9,  26,  60
+    .byte  18,  24,  64
+    .byte  18,  21,  72
+    .byte   9,  36,  64
+    .byte   9,  32,  64
+    .byte   9,  30,  72
+    .byte   9,  30,  81
+    .byte  18,  30,  72
+    .byte   9,  32,  64
+    .byte   9,  36,  64
+    .byte   9,  40,  96
+    .byte   9,  40,  86
+    .byte   9,  24,  81
+    .byte   9,  26,  86
+    .byte   9,  24,  96
+    .byte   9,  24,  54
+    .byte   9,  32,  60
+    .byte   9,  32,  64
+    .byte   9,  30,  72
+    .byte   9,  30,  54
+    .byte   9,  30,  61
+    .byte   9,  30,  64
+    .byte   9,  36,  72
+    .byte   9,  36,  81
+    .byte   9,  29,  86
+    .byte   9,  29,  96
+    .byte   9,  27,  54
+    .byte   9,  27,  96
+    .byte   9,  27,  86
+    .byte   9,  29,  96
+    .byte   9,  27,  54
+    .byte   9,  27,  60
+    .byte   9,  36,  64
+    .byte   9,  36,  72
+    .byte   9,  32,  81
+    .byte   9,  32,  61
+    .byte   9,  32,  64
+    .byte   9,  32,  72
+    .byte   9,  40,  81
+    .byte   9,  40,  86
+    .byte   9,  32,  96
+    .byte   9,  32,  54
+    .byte   9,  32,  60
+    .byte   9,  32,  54
+    .byte   9,  30,  96
+    .byte   9,  27,  54
+    .byte   9,  24,  60
+    .byte   9,  26,  64
+    .byte   9,  24,  72
+    .byte   9,  30,  81
+    .byte   9,  36,  86
+    .byte   9,  36,  64
+    .byte   9,  36,  72
+    .byte   9,  36,  81
+    .byte   9,  36,  86
+    .byte   9,  36,  96
+    .byte   9,  36,  51
+    .byte   9,  36,  57
+    .byte  18,  36,  64
+    .byte   9,  21,  64
+    .byte   9,  24,  64
+    .byte  18,  21,   0
+    .byte  18,  36,  51
+    .byte   9,  40,  48
+    .byte   9,  40,  64
+    .byte   9,  20,  57
+    .byte   9,  21,  51
+    .byte   9,  20,  96
+    .byte   9,  20,  86
+    .byte   9,  32,  81
+    .byte   9,  32,  72
+    .byte   9,  36,  64
+    .byte   9,  36,  72
+    .byte   9,  18,  61
+    .byte   9,  20,  64
+    .byte   9,  18,  72
+    .byte   9,  18,  81
+    .byte   9,  30,  86
+    .byte   9,  30,  96
+    .byte   9,  32,  51
+    .byte   9,  18,  51
+    .byte   9,  20,  96
+    .byte   9,  21,  51
+    .byte   9,  24,  96
+    .byte   9,  26,  96
+    .byte   9,  29,  64
+    .byte   9,  32,  64
+    .byte  18,  24,  60
+    .byte   9,  18,  96
+    .byte   9,  18,  51
+    .byte  18,  20,  96
+    .byte  18,  21,  86
+    .byte  18,  40,  64
+    .byte   9,  30,  96
+    .byte   9,  30,  51
+    .byte  18,  32,  96
+    .byte  18,  36,  86
+    .byte   9,  32,  72
+    .byte   9,  32,  64
+    .byte   9,  36,  60
+    .byte   9,  40,  60
+    .byte  18,  36,  60
+    .byte   9,  43,  64
+    .byte   9,  43,  72
+    .byte  18,  30,  81
+    .byte  18,  32,  81
+    .byte  18,   0,   0
+    .byte  18,  29,  81
+    .byte  18,  26,  86
+    .byte  18,  24,  96
+    .byte   9,  36,  64
+    .byte   9,  40,  64
+    .byte   9,  43,  64
+    .byte   9,  48,  64
+    .byte  18,  48,  96
+    .byte   9,  24,  96
+    .byte   9,  26,  96
+    .byte  18,  24,  96
+    .byte  18,  32,  96
+    .byte  18,  30,  96
+    .byte   9,  24,  96
+    .byte   9,  26,  96
+    .byte  18,  24,  96
+    .byte  18,  21,  96
+    .byte  18,  32,  96
+    .byte   9,  24,  96
+    .byte   9,  26,  96
+    .byte  18,  24,  96
+    .byte  18,  21,  96
+    .byte   9,  36,  96
+    .byte   9,  32,  96
+    .byte  36,  30,  96
+    .byte   9,  32,  96
+    .byte   9,  36,  96
+    .byte  72,  38,  96
     .byte   0,   0,   0 ; Fin de partition
 
-
 ; ===================================================================
-
-; ===================================================================
-; THE BEATLES - HEY JUDE (PAUL MCCARTNEY, 1968)
-; Arrangement polyphonique 2 voix pour Apple II (Electric Duet TDM)
-; Couplet + Coda ritournelle vocale 'Na-na-na, Hey Jude' (6 rotations)
-; 132 evenements
+; 2. TOMASO ALBINONI / R. GIAZOTTO - ADAGIO EN SOL MINEUR
+; Chef-d'oeuvre baroque pour violon solo expressif et basse d'orgue
+; Duree > 90 secondes (~1.5 min), 32 mesures a ~83 BPM
+; 59 evenements
 ; Format : .byte DUREE, PERIODE_VOIX1, PERIODE_VOIX2
 ; ===================================================================
+ALBINONI_SCORE:
+    .byte  18,   0,  64
+    .byte  72,  21,  64
+    .byte  36,  24,  64
+    .byte  36,  27,  64
+    .byte  36,  29,  64
+    .byte 180,  32,  57
+    .byte  54,  34,  57
+    .byte  90,  20,  57
+    .byte  36,  21,  57
+    .byte  36,  24,  57
+    .byte  36,  27,  57
+    .byte  90,  29,  57
+    .byte  90,  29,  54
+    .byte  54,  32,  54
+    .byte  90,  16,  54
+    .byte  36,  18,  54
+    .byte  36,  16,  54
+    .byte  36,  20,  54
+    .byte  36,  21,  54
+    .byte 198,  20,  48
+    .byte  18,  20,  57
+    .byte  72,  18,  57
+    .byte  36,  20,  57
+    .byte  36,  18,  57
+    .byte  36,  21,  57
+    .byte  36,  24,  57
+    .byte 198,  21,  54
+    .byte  90,  20,  64
+    .byte  36,  21,  64
+    .byte  36,  20,  64
+    .byte  36,  24,  64
+    .byte  36,  27,  64
+    .byte 198,  24,  57
+    .byte 144,  21,  54
+    .byte  90,  20,  54
+    .byte 180,  21,  43
+    .byte  36,  16,  43
+    .byte 108,  14,  43
+    .byte  36,  16,  43
+    .byte  36,  17,  43
+    .byte  36,  16,  43
+    .byte 198,  18,  43
+    .byte 126,  20,  48
+    .byte  36,  24,  48
+    .byte  36,  20,  48
+    .byte  36,  16,  48
+    .byte 108,  21,  54
+    .byte  36,  27,  54
+    .byte  36,  21,  54
+    .byte  36,  16,  54
+    .byte 200,  24,  61
+    .byte  34,  24,  61
+    .byte 200,  27,  64
+    .byte  16,  27,  64
+    .byte 200,  29,  86
+    .byte  16,  29,  86
+    .byte 200,  32,  64
+    .byte 200,  32,  64
+    .byte  68,  32,  64
+    .byte   0,   0,   0 ; Fin de partition
+
 HEYJUDE_SCORE:
     .byte  16,   0,   0 ; V1=REST  V2=REST 
     .byte  32,  48,   0 ; V1=C4    V2=REST 
@@ -314,6 +622,7 @@ HEYJUDE_SCORE:
 ; 89 evenements
 ; Format : .byte DUREE, PERIODE_VOIX1, PERIODE_VOIX2
 ; ===================================================================
+
 LETITBE_SCORE:
     .byte  10,  64,  76 ; When (G3/E3)
     .byte  10,  64,  76 ; I (G3/E3)

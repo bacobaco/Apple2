@@ -120,16 +120,27 @@ Format d'un événement musical (3 octets) :
 
 ## 🎹 5. Les Œuvres Embarquées
 
-Le programme `bach.asm` embarque désormais un véritable juke-box contrapuntique à deux voix réelles :
+Le programme `bach.asm` embarque désormais un véritable juke-box contrapuntique à deux voix réelles comprenant 5 chefs-d'œuvre :
 
-### 1. J.S. Bach — Fuga II en Do mineur (BWV 847)
+### 1. J.S. Bach — Fuga II en Do mineur (BWV 847) — Intégrale (31 mesures, ~1.47 min)
 Issue du Livre 1 du *Clavecin bien tempéré* (1722) :
-* 154 événements musicaux à 2 voix découpés tranche par tranche.
-* Entrée solennelle du Sujet à l'Alto (mesures 1-2).
-* Entrée triomphale du Soprano à la quinte (mesures 3-5) pendant que l'Alto déroule le contre-sujet virtuose en doubles croches ininterrompues.
-* Épisode contrapuntique à deux voix en marches d'harmonie descendantes.
+* **397 événements musicaux** à 2 voix pures découpés tranche par tranche.
+* **L'intégralité absolue des 31 mesures** de la fugue (au lieu de s'arrêter à la mesure 9) :
+  1. *Exposition* : Entrée solennelle du Sujet à l'Alto (mesures 1-2), Réponse du Soprano à la quinte avec contre-sujet 1 (mesures 3-5), entrée de la Basse avec contre-sujet 2 (mesures 7-8).
+  2. *Épisodes et divertissements contrapuntiques* : Marches d'harmonie en doubles croches (mesures 9-14), modulation en Mi♭ majeur (mesures 11-14).
+  3. *Développement central* : Réexpositions en Sol mineur et Do mineur (mesures 15-26), alternance virtuose des motifs thématiques.
+  4. *Coda et Pédale finale* : Pédale de tonique, strette et résolution solennelle sur l'accord final picard (mesures 27-31).
 
-### 2. The Beatles — Hey Jude (Paul McCartney, 1968)
+### 2. T. Albinoni / R. Giazotto — Adagio en Sol mineur (~1.52 min)
+Le célèbre Adagio baroque en Sol mineur pour cordes et orgue :
+* **59 événements musicaux** à ~83 BPM (~1 minute 31 secondes de musique).
+* **Tonalité originale** : Sol mineur (Gm, Eb, Cm, D7).
+* **Harmonie et contrepoint à deux voix** :
+  1. *Pizzicato de basse et orgue* : Marche noble et régulière de basse soutenant le thème.
+  2. *Chant élégiaque au violon solo* : Thème mélancolique avec ses montées expressives, trilles et appoggiatures.
+  3. *Développement harmonique* : Modulations dramatiques vers Mi♭ majeur et Do mineur, avant la cadence finale suspendue.
+
+### 3. The Beatles — Hey Jude (Paul McCartney, 1968)
 Le chef-d'œuvre universellement célébré des Beatles (single Apple Records) :
 * **132 événements musicaux** à ~95 BPM (~60 secondes de musique).
 * **Tonalité originale** : Fa majeur (F, C, C7, Bb).
@@ -137,7 +148,7 @@ Le chef-d'œuvre universellement célébré des Beatles (single Apple Records) :
   1. **Couplet complet** : L'introduction vocale (*« Hey Jude, don't make it bad... »*) suivie de la seconde partie (*« Remember to let her into your heart... then you begin to make it better! »*).
   2. **Grande Coda ritournelle vocale en 6 rotations complètes** : Le célèbre hymne universel (*« Naaaa, na, na, na-na-na-na, na-na-na-na, Hey Jude! »*) répété 6 fois en harmonie vocale pure à deux voix (Lead vocal $F_4 \rightarrow A_4 \rightarrow C_5 \rightarrow G_5/F_5 \rightarrow E\flat_5/D_5 \rightarrow C_5$ + Chœur $C_4 \rightarrow F_4 \rightarrow A_4 \rightarrow E\flat_5/D_5 \rightarrow C_5/B\flat_4 \rightarrow A_4$), sans aucune basse lourde qui perturbe le spectre acoustique 1-bit.
 
-### 3. The Beatles — Let It Be (Paul McCartney, 1970)
+### 4. The Beatles — Let It Be (Paul McCartney, 1970)
 L'hymne gospel-rock inoubliable des Beatles :
 * **89 événements musicaux** à ~72 BPM (~35 secondes de musique).
 * **Tonalité originale** : Do majeur (C, G, Am, F).
@@ -147,7 +158,7 @@ L'hymne gospel-rock inoubliable des Beatles :
   3. **Refrain universel** : (*« Let it be, let it be, let it be, yeah let it be, whisper words of wisdom, let it be... »*).
   4. **Cadence finale** : Résolution chorale Beatles en Fa - Mim - Rém - Do.
 
-### 4. The Beatles — I Want You (She's So Heavy) (John Lennon, 1969)
+### 5. The Beatles — I Want You (She's So Heavy) (John Lennon, 1969)
 Le riff proto-heavy metal / blues-rock mythique d'*Abbey Road* :
 * **109 événements musicaux** en 6/8 (~45 secondes de musique).
 * **Tonalité originale** : Ré mineur (Dm, Dm/E, Dm/F, E7♭9, B♭7, A7aug).
@@ -180,9 +191,10 @@ python make_ai_asm.py
    BRUN BACH
    ```
 4. Menu interactif :
-   * Touche **`1`** : J.S. Bach — *Fugue II en Do mineur* (BWV 847)
-   * Touche **`2`** : The Beatles — *Hey Jude* (1968)
-   * Touche **`3`** : The Beatles — *Let It Be* (1970)
-   * Touche **`4`** : The Beatles — *I Want You (She's So Heavy)* (1969)
+   * Touche **`1`** : J.S. Bach — *Fugue II en Do mineur* (BWV 847) - Complète (31 mesures)
+   * Touche **`2`** : T. Albinoni — *Adagio en Sol mineur* (~1.5 min)
+   * Touche **`3`** : The Beatles — *Hey Jude* (1968)
+   * Touche **`4`** : The Beatles — *Let It Be* (1970)
+   * Touche **`5`** : The Beatles — *I Want You (She's So Heavy)* (1969)
    * Touche **`Q`** : Quitter proprement vers DOS 3.3.
    * Pendant la lecture : **n'importe quelle touche** interrompt instantanément la musique et revient au menu principal sans plantage.

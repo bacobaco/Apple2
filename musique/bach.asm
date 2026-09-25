@@ -105,6 +105,8 @@ WAIT_INPUT:
     BEQ PLAY_PIECE_3
     CMP #'4'
     BEQ PLAY_PIECE_4
+    CMP #'5'
+    BEQ PLAY_PIECE_5
     CMP #'Q'
     BEQ EXIT_TO_DOS
     CMP #'q'
@@ -138,9 +140,28 @@ PLAY_PIECE_1:
     JMP SHOW_MENU
 
 ; ===================================================================
-; LECTURE PIECE 2 : THE BEATLES - HEY JUDE (1968)
+; LECTURE PIECE 2 : TOMASO ALBINONI - ADAGIO EN SOL MINEUR
 ; ===================================================================
 PLAY_PIECE_2:
+    JSR HOME
+    LDA #<PLAY_ALBINONI_TEXT
+    LDY #>PLAY_ALBINONI_TEXT
+    JSR PRINT_STRING
+
+    LDA #<ALBINONI_SCORE
+    STA $1E
+    LDA #>ALBINONI_SCORE
+    STA $1F
+
+    JSR LUTUS_PLAYER
+
+    STA KBDSTRB         ; Acquitte toute touche pressee pour arreter
+    JMP SHOW_MENU
+
+; ===================================================================
+; LECTURE PIECE 3 : THE BEATLES - HEY JUDE (1968)
+; ===================================================================
+PLAY_PIECE_3:
     JSR HOME
     LDA #<PLAY_HEYJUDE_TEXT
     LDY #>PLAY_HEYJUDE_TEXT
@@ -157,9 +178,9 @@ PLAY_PIECE_2:
     JMP SHOW_MENU
 
 ; ===================================================================
-; LECTURE PIECE 3 : THE BEATLES - LET IT BE (1970)
+; LECTURE PIECE 4 : THE BEATLES - LET IT BE (1970)
 ; ===================================================================
-PLAY_PIECE_3:
+PLAY_PIECE_4:
     JSR HOME
     LDA #<PLAY_LETITBE_TEXT
     LDY #>PLAY_LETITBE_TEXT
@@ -176,9 +197,9 @@ PLAY_PIECE_3:
     JMP SHOW_MENU
 
 ; ===================================================================
-; LECTURE PIECE 4 : THE BEATLES - I WANT YOU (SHE'S SO HEAVY) (1969)
+; LECTURE PIECE 5 : THE BEATLES - I WANT YOU (SHE'S SO HEAVY) (1969)
 ; ===================================================================
-PLAY_PIECE_4:
+PLAY_PIECE_5:
     JSR HOME
     LDA #<PLAY_IWANTYOU_TEXT
     LDY #>PLAY_IWANTYOU_TEXT
@@ -397,13 +418,14 @@ MENU_TEXT:
     .text "PORTEUSE 12.9 KHZ / FILTRE MECANIQUE HP", $0D
     .text "----------------------------------------", $0D
     .text "SELECTIONNEZ UN MORCEAU :", $0D
-    .text " [1] J.S. BACH : FUGUE EN DO MINEUR", $0D
-    .text " [2] THE BEATLES : HEY JUDE (1968)", $0D
-    .text " [3] THE BEATLES : LET IT BE (1970)", $0D
-    .text " [4] THE BEATLES : I WANT YOU (1969)", $0D
+    .text " [1] J.S. BACH : FUGUE II COMPLETE", $0D
+    .text " [2] T. ALBINONI : ADAGIO EN SOL MINEUR", $0D
+    .text " [3] THE BEATLES : HEY JUDE (1968)", $0D
+    .text " [4] THE BEATLES : LET IT BE (1970)", $0D
+    .text " [5] THE BEATLES : I WANT YOU (1969)", $0D
     .text " [Q] QUITTER VERS LE DOS 3.3", $0D
     .text "----------------------------------------", $0D
-    .text "VOTRE CHOIX [1..4, Q] ? ", $00
+    .text "VOTRE CHOIX [1..5, Q] ? ", $00
 
 PLAY_BWV847_TEXT:
     .text "========================================", $0D
@@ -411,10 +433,30 @@ PLAY_BWV847_TEXT:
     .text "========================================", $0D
     .text $0D
     .text "OEUVRE : FUGUE II EN DO MINEUR (BWV 847)", $0D
-    .text "AUTEUR : JOHANN SEBASTIAN BACH", $0D
+    .text "AUTEUR : J.S. BACH (31 MESURES COMPLETES)", $0D
     .text $0D
-    .text "VOIX 1 : THEME / CONTRE-SUJET", $0D
-    .text "VOIX 2 : SUJET DE LA FUGUE", $0D
+    .text "VOIX 1 : SOPRANO / CONTRE-SUJET & THEME", $0D
+    .text "VOIX 2 : ALTO & BASSE / SUJET PRINCIPAL", $0D
+    .text $0D
+    .text "PORTEUSE : 12 937 HZ SUR LE HP ($C030)", $0D
+    .text "DECOUPE  : PWM 50% / MULTIPLEXAGE TDM", $0D
+    .text "FILTRE   : INTEGRATION MECANIQUE DU CONE", $0D
+    .text $0D
+    .text "----------------------------------------", $0D
+    .text "APPUYEZ SUR N'IMPORTE QUELLE TOUCHE", $0D
+    .text "POUR ARRETER LA LECTURE...", $0D
+    .text "----------------------------------------", $00
+
+PLAY_ALBINONI_TEXT:
+    .text "========================================", $0D
+    .text "***     LECTURE EN COURS (2 VOIX)    ***", $0D
+    .text "========================================", $0D
+    .text $0D
+    .text "OEUVRE : ADAGIO EN SOL MINEUR (~1.5 MIN)", $0D
+    .text "AUTEUR : TOMASO ALBINONI / R. GIAZOTTO", $0D
+    .text $0D
+    .text "VOIX 1 : VIOLON SOLO LYRIQUE & EXPRESSIF", $0D
+    .text "VOIX 2 : BASSE CONTINUE D'ORGUE (PEDALE)", $0D
     .text $0D
     .text "PORTEUSE : 12 937 HZ SUR LE HP ($C030)", $0D
     .text "DECOUPE  : PWM 50% / MULTIPLEXAGE TDM", $0D
