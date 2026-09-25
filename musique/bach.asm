@@ -452,7 +452,7 @@ PLAY_ALBINONI_TEXT:
     .text "***     LECTURE EN COURS (2 VOIX)    ***", $0D
     .text "========================================", $0D
     .text $0D
-    .text "OEUVRE : ADAGIO EN SOL MINEUR (~1.27 MIN)", $0D
+    .text "OEUVRE : ADAGIO EN SOL MINEUR (1.27 MIN)", $0D
     .text "AUTEUR : TOMASO ALBINONI / R. GIAZOTTO", $0D
     .text $0D
     .text "VOIX 1 : VIOLON SOLO LYRIQUE & EXPRESSIF", $0D
