@@ -53,9 +53,9 @@ En 1981, **Paul Lutus** ([arachnoid.com/electric_duet](https://arachnoid.com/ele
 
 Paul Lutus ne fait **jamais de XOR** sur la bascule. Il utilise le **Multiplexage Temporel (Time-Domain Multiplexing - TDM)** associé à la **Modulation de Largeur d'Impulsion (PWM)**.
 
-### Le Principe du Découpage à 12,94 kHz
+### Le Principe du Découpage à 12,92 kHz
 1. La boucle 6502 tourne à temps **rigoureusement constant : exactement 79 cycles d'horloge**.
-   $$F_{carrier} = \frac{1\,020\,484\text{ Hz}}{79} \approx 12\,937\text{ Hz}$$
+   $$F_{carrier} = \frac{1\,020\,484\text{ Hz}}{79} \approx 12\,917{,}52\text{ Hz}$$
    Cette fréquence ultrasonore se situe tout en haut du spectre audible (ou au-delà de la réponse du haut-parleur).
 
 2. À l'intérieur de cette fenêtre de 79 cycles, le moteur détermine l'état de chaque voix (0 ou 1) :
@@ -64,7 +64,7 @@ Paul Lutus ne fait **jamais de XOR** sur la bascule. Il utilise le **Multiplexag
    * **Une seule voix active** (1, 0) ou (0, 1) : Le haut-parleur est commuté à la moitié de la boucle (Duty cycle = 50% à 12,9 kHz, tension moyenne = **0,5 V**).
 
 ```
-                      BOUCLE DE 79 CYCLES (12,94 kHz)
+                      BOUCLE DE 79 CYCLES (12,92 kHz)
   ───────────────────────────────────────────────────────────────────
   État (0, 0) :   [           HP = BAS (0.0 V)                      ]
   État (1, 0) :   [    HP = HAUT (40c)    ][    HP = BAS (39c)      ] -> Moyenne = 0.5 V
@@ -74,7 +74,7 @@ Paul Lutus ne fait **jamais de XOR** sur la bascule. Il utilise le **Multiplexag
 ```
 
 ### Le Filtrage Mécanique du Cône : Une Sommation Linéaire Pure
-La membrane physique du haut-parleur de l'Apple II possède une masse et une inertie mécanique qui l'empêchent de vibrer à 12,94 kHz. Elle se comporte comme un **filtre analogique passe-bas acoustique d'ordre 2**.
+La membrane physique du haut-parleur de l'Apple II possède une masse et une inertie mécanique qui l'empêchent de vibrer à 12,92 kHz. Elle se comporte comme un **filtre analogique passe-bas acoustique d'ordre 2**.
 
 Le déplacement réel de la membrane $x(t)$ correspond donc à la valeur moyenne lissée du signal PWM :
 $$x(t) \propto \frac{V_1(t) + V_2(t)}{2}$$
@@ -88,27 +88,34 @@ Puisque l'opération est linéaire :
 
 ---
 
-## 🎵 4. Table des Périodes Musicales
+## 🎵 4. Table des Périodes Musicales et Calibrage de Justesse
 
-Dans le moteur de Lutus, la période d'une note est le nombre de boucles de 79 cycles constituant une demi-période d'onde carrée.
-La formule de conversion est :
-$$P = \mathrm{round}\left( \frac{12\,600}{f} \right)$$
+Dans le moteur d'*Electric Duet*, la période $P$ d'une note est le nombre de passages dans la boucle de 79 cycles constituant une demi-période d'onde carrée.
+La formule physique exacte calibrée sur l'horloge NTSC Apple II (1,020484 MHz) est :
+$$P = \mathrm{round}\left( \frac{F_{carrier}}{2 \cdot f} \right) \quad \text{ou en demi-périodes : } P = \mathrm{round}\left( \frac{12\,917{,}5}{f} \right)$$
 
-Exemples de correspondances :
-| Note | Fréquence | Période $P$ | Période hexadécimale |
-| :---: | :---: | :---: | :---: |
-| **Do 3 (C3)** | 130,8 Hz | 96 | `$60` |
-| **Fa 3 (F3)** | 174,6 Hz | 72 | `$48` |
-| **Sol 3 (G3)** | 196,0 Hz | 64 | `$40` |
-| **Do 4 (C4)** | 261,6 Hz | 48 | `$30` |
-| **Ré 4 (D4)** | 293,7 Hz | 43 | `$2B` |
-| **Mi♭ 4 (Eb4)**| 311,1 Hz | 40 | `$28` |
-| **Fa 4 (F4)** | 349,2 Hz | 36 | `$24` |
-| **Sol 4 (G4)** | 392,0 Hz | 32 | `$20` |
-| **La 4 (A4)** | 440,0 Hz | 29 | `$1D` |
-| **Si♭ 4 (Bb4)**| 466,2 Hz | 27 | `$1B` |
-| **Si 4 (B4)** | 493,9 Hz | 26 | `$1A` |
-| **Do 5 (C5)** | 523,3 Hz | 24 | `$18` |
+*(L'ancienne constante historique approximative de 12 600 rendait toutes les notes 43 cents trop aiguës et faussait les intervalles harmoniques entre le grave et l'aigu de près d'un quart de ton).*
+
+Table des valeurs étalonnées :
+| Note | Fréquence $f$ | Période décimale $P$ | Période hexadécimale | Justesse |
+| :---: | :---: | :---: | :---: | :---: |
+| **Sol 2 (G2)** | 98,00 Hz | 132 | `$84` | -2.5 cents |
+| **La 2 (A2)** | 110,00 Hz | 117 | `$75` | +6.4 cents |
+| **Si♭ 2 (Bb2)**| 116,54 Hz | 111 | `$6F` | -2.5 cents |
+| **Do 3 (C3)** | 130,81 Hz | 99 | `$63` | -4.4 cents |
+| **Ré 3 (D3)** | 146,83 Hz | 88 | `$58` | -0.5 cents |
+| **Fa 3 (F3)** | 174,61 Hz | 74 | `$4A` | +0.4 cents |
+| **Sol 3 (G3)** | 196,00 Hz | 66 | `$42` | -2.5 cents |
+| **Do 4 (C4)** | 261,63 Hz | 49 | `$31` | -4.4 cents |
+| **Ré 4 (D4)** | 293,66 Hz | 44 | `$2C` | -0.5 cents |
+| **Mi♭ 4 (Eb4)**| 311,13 Hz | 42 | `$2A` | +19.9 cents |
+| **Fa 4 (F4)** | 349,23 Hz | 37 | `$25` | +0.4 cents |
+| **Sol 4 (G4)** | 392,00 Hz | 33 | `$21` | +0.1 cents |
+| **La 4 (A4)** | 440,00 Hz | 29 | `$1D` | -21.4 cents |
+| **Si♭ 4 (Bb4)**| 466,16 Hz | 28 | `$1C` | +18.0 cents |
+| **Si 4 (B4)** | 493,88 Hz | 26 | `$1A` | -8.7 cents |
+| **Do 5 (C5)** | 523,25 Hz | 25 | `$19` | +21.8 cents |
+| **Ré 5 (D5)** | 587,33 Hz | 22 | `$16` | -0.5 cents |
 
 Format d'un événement musical (3 octets) :
 1. `DURÉE` : Décompte en unités de ~20,2 ms ($256 \times 79\text{ cycles}$).
