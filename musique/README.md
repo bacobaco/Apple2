@@ -131,20 +131,21 @@ Issue du Livre 1 du *Clavecin bien tempéré* (1722) :
 
 ### 2. The Beatles — Hey Jude (Paul McCartney, 1968)
 Le chef-d'œuvre universellement célébré des Beatles (single Apple Records) :
-* **149 événements musicaux** à ~95 BPM (~65 secondes de musique).
+* **132 événements musicaux** à ~95 BPM (~60 secondes de musique).
 * **Tonalité originale** : Fa majeur (F, C, C7, Bb).
-* **Déroulement complet** :
-  1. **Couplet complet** : L'introduction vocale (*« Hey Jude, don't make it bad... »*) suivie de la seconde partie (*« Remember to let her into your heart... »*).
-  2. **Grande Coda en 6 rotations complètes** : Le célèbre hymne universel (*« Naaaa, na, na, na-na-na-na, na-na-na-na, Hey Jude! »*) répété 6 fois sur la progression mythique **Fa – Mi♭ – Si♭ – Fa** avec le contre-chant à la neuvième et la basse marchante.
+* **Déroulement complet centré sur le chant** :
+  1. **Couplet complet** : L'introduction vocale (*« Hey Jude, don't make it bad... »*) suivie de la seconde partie (*« Remember to let her into your heart... then you begin to make it better! »*).
+  2. **Grande Coda ritournelle vocale en 6 rotations complètes** : Le célèbre hymne universel (*« Naaaa, na, na, na-na-na-na, na-na-na-na, Hey Jude! »*) répété 6 fois en harmonie vocale pure à deux voix (Lead vocal $F_4 \rightarrow A_4 \rightarrow C_5 \rightarrow G_5/F_5 \rightarrow E\flat_5/D_5 \rightarrow C_5$ + Chœur $C_4 \rightarrow F_4 \rightarrow A_4 \rightarrow E\flat_5/D_5 \rightarrow C_5/B\flat_4 \rightarrow A_4$), sans aucune basse lourde qui perturbe le spectre acoustique 1-bit.
 
 ### 3. The Beatles — Let It Be (Paul McCartney, 1970)
 L'hymne gospel-rock inoubliable des Beatles :
-* **76 événements musicaux** à ~75 BPM (~28 secondes de musique).
-* **Tonalité originale** : Do majeur (C, G/B, Am, F).
-* **100% centré sur le chant (sans intro)** :
-  1. **Couplet 1** : Attaque directe sur le chant (*« When I find myself in times of trouble, Mother Mary comes to me, speaking words of wisdom, let it be... »*).
+* **89 événements musicaux** à ~72 BPM (~35 secondes de musique).
+* **Tonalité originale** : Do majeur (C, G, Am, F).
+* **100% centré sur le chant pur (sans intro, duo vocal en tierces)** :
+  1. **Couplet 1** : Attaque directe sur le chant fidèle note pour note à Paul McCartney (*« When I find myself in times of trouble, Mother Mary comes to me, speaking words of wisdom, let it be... »*).
   2. **Couplet 2** : (*« And in my hour of darkness, she is standing right in front of me, speaking words of wisdom, let it be... »*).
   3. **Refrain universel** : (*« Let it be, let it be, let it be, yeah let it be, whisper words of wisdom, let it be... »*).
+  4. **Cadence finale** : Résolution chorale Beatles en Fa - Mim - Rém - Do.
 
 ### 4. The Beatles — I Want You (She's So Heavy) (John Lennon, 1969)
 Le riff proto-heavy metal / blues-rock mythique d'*Abbey Road* :

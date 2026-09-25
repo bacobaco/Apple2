@@ -164,36 +164,14 @@ BWV847_SCORE:
 
 
 ; ===================================================================
-; THE BEATLES - HEY JUDE (PAUL MCCARTNEY, 1968)
-; Arrangement polyphonique 2 voix pour Apple II (Electric Duet TDM)
-; 17 mesures a ~95 BPM, 81 evenements
-; Format : .byte DUREE, PERIODE_VOIX1, PERIODE_VOIX2
-; ===================================================================
 
 ; ===================================================================
 ; THE BEATLES - HEY JUDE (PAUL MCCARTNEY, 1968)
 ; Arrangement polyphonique 2 voix pour Apple II (Electric Duet TDM)
-; Couplet complet + Coda triomphale "Na-na-na" (F - Eb - Bb - F)
-; 70 evenements
+; Couplet + Coda ritournelle vocale 'Na-na-na, Hey Jude' (6 rotations)
+; 132 evenements
 ; Format : .byte DUREE, PERIODE_VOIX1, PERIODE_VOIX2
 ; ===================================================================
-
-; ===================================================================
-; THE BEATLES - HEY JUDE (PAUL MCCARTNEY, 1968)
-; Arrangement polyphonique 2 voix pour Apple II (Electric Duet TDM)
-; Couplet complet + Vraie Coda "Na-na-na" cadencée (F - Eb - Bb - F)
-; 82 evenements
-; Format : .byte DUREE, PERIODE_VOIX1, PERIODE_VOIX2
-; ===================================================================
-
-; ===================================================================
-; THE BEATLES - HEY JUDE (PAUL MCCARTNEY, 1968)
-; Arrangement polyphonique 2 voix pour Apple II (Electric Duet TDM)
-; Couplet complet + 6 rotations de la Coda "Na-na-na" (F - Eb - Bb - F)
-; 149 evenements
-; Format : .byte DUREE, PERIODE_VOIX1, PERIODE_VOIX2
-; ===================================================================
-
 HEYJUDE_SCORE:
     .byte  16,   0,   0 ; V1=REST  V2=REST 
     .byte  32,  48,   0 ; V1=C4    V2=REST 
@@ -242,195 +220,190 @@ HEYJUDE_SCORE:
     .byte  32,  72,  96 ; V1=F3    V2=C3   
     .byte  32,  72,  72 ; V1=F3    V2=F3   
     .byte  32,  72,  96 ; V1=F3    V2=C3   
-    .byte  64,  36, 144 ; V1=F4    V2=F2   
-    .byte  32,  29,  96 ; V1=A4    V2=C3   
-    .byte  32,  24,  72 ; V1=C5    V2=F3   
-    .byte  16,  36, 162 ; V1=F4    V2=Eb2  
-    .byte  16,  36, 162 ; V1=F4    V2=Eb2  
-    .byte  16,  36, 162 ; V1=F4    V2=Eb2  
-    .byte  16,  36, 162 ; V1=F4    V2=Eb2  
-    .byte  32,  32, 108 ; V1=G4    V2=Bb2  
-    .byte  32,  27,  81 ; V1=Bb4   V2=D#3  
-    .byte  16,  43, 108 ; V1=D4    V2=Bb2  
-    .byte  16,  43, 108 ; V1=D4    V2=Bb2  
-    .byte  16,  43, 108 ; V1=D4    V2=Bb2  
-    .byte  16,  43, 108 ; V1=D4    V2=Bb2  
-    .byte  32,  36,  86 ; V1=F4    V2=D3   
-    .byte  32,  43,  72 ; V1=D4    V2=F3   
-    .byte  32,  48,  96 ; V1=C4    V2=C3   
-    .byte  96,  36, 144 ; V1=F4    V2=F2   
-    .byte  64,  36, 144 ; V1=F4    V2=F2   
-    .byte  32,  29,  96 ; V1=A4    V2=C3   
-    .byte  32,  24,  72 ; V1=C5    V2=F3   
-    .byte  16,  36, 162 ; V1=F4    V2=Eb2  
-    .byte  16,  36, 162 ; V1=F4    V2=Eb2  
-    .byte  16,  36, 162 ; V1=F4    V2=Eb2  
-    .byte  16,  36, 162 ; V1=F4    V2=Eb2  
-    .byte  32,  32, 108 ; V1=G4    V2=Bb2  
-    .byte  32,  27,  81 ; V1=Bb4   V2=D#3  
-    .byte  16,  43, 108 ; V1=D4    V2=Bb2  
-    .byte  16,  43, 108 ; V1=D4    V2=Bb2  
-    .byte  16,  43, 108 ; V1=D4    V2=Bb2  
-    .byte  16,  43, 108 ; V1=D4    V2=Bb2  
-    .byte  32,  36,  86 ; V1=F4    V2=D3   
-    .byte  32,  43,  72 ; V1=D4    V2=F3   
-    .byte  32,  48,  96 ; V1=C4    V2=C3   
-    .byte  96,  36, 144 ; V1=F4    V2=F2   
-    .byte  64,  36, 144 ; V1=F4    V2=F2   
-    .byte  32,  29,  96 ; V1=A4    V2=C3   
-    .byte  32,  24,  72 ; V1=C5    V2=F3   
-    .byte  16,  36, 162 ; V1=F4    V2=Eb2  
-    .byte  16,  36, 162 ; V1=F4    V2=Eb2  
-    .byte  16,  36, 162 ; V1=F4    V2=Eb2  
-    .byte  16,  36, 162 ; V1=F4    V2=Eb2  
-    .byte  32,  32, 108 ; V1=G4    V2=Bb2  
-    .byte  32,  27,  81 ; V1=Bb4   V2=D#3  
-    .byte  16,  43, 108 ; V1=D4    V2=Bb2  
-    .byte  16,  43, 108 ; V1=D4    V2=Bb2  
-    .byte  16,  43, 108 ; V1=D4    V2=Bb2  
-    .byte  16,  43, 108 ; V1=D4    V2=Bb2  
-    .byte  32,  36,  86 ; V1=F4    V2=D3   
-    .byte  32,  43,  72 ; V1=D4    V2=F3   
-    .byte  32,  48,  96 ; V1=C4    V2=C3   
-    .byte  96,  29, 144 ; V1=A4    V2=F2   
-    .byte  64,  36, 144 ; V1=F4    V2=F2   
-    .byte  32,  29,  96 ; V1=A4    V2=C3   
-    .byte  32,  24,  72 ; V1=C5    V2=F3   
-    .byte  16,  36, 162 ; V1=F4    V2=Eb2  
-    .byte  16,  36, 162 ; V1=F4    V2=Eb2  
-    .byte  16,  36, 162 ; V1=F4    V2=Eb2  
-    .byte  16,  36, 162 ; V1=F4    V2=Eb2  
-    .byte  32,  32, 108 ; V1=G4    V2=Bb2  
-    .byte  32,  27,  81 ; V1=Bb4   V2=D#3  
-    .byte  16,  43, 108 ; V1=D4    V2=Bb2  
-    .byte  16,  43, 108 ; V1=D4    V2=Bb2  
-    .byte  16,  43, 108 ; V1=D4    V2=Bb2  
-    .byte  16,  43, 108 ; V1=D4    V2=Bb2  
-    .byte  32,  36,  86 ; V1=F4    V2=D3   
-    .byte  32,  43,  72 ; V1=D4    V2=F3   
-    .byte  32,  48,  96 ; V1=C4    V2=C3   
-    .byte  96,  29, 144 ; V1=A4    V2=F2   
-    .byte  64,  36, 144 ; V1=F4    V2=F2   
-    .byte  32,  29,  96 ; V1=A4    V2=C3   
-    .byte  32,  24,  72 ; V1=C5    V2=F3   
-    .byte  16,  36, 162 ; V1=F4    V2=Eb2  
-    .byte  16,  36, 162 ; V1=F4    V2=Eb2  
-    .byte  16,  36, 162 ; V1=F4    V2=Eb2  
-    .byte  16,  36, 162 ; V1=F4    V2=Eb2  
-    .byte  32,  32, 108 ; V1=G4    V2=Bb2  
-    .byte  32,  27,  81 ; V1=Bb4   V2=D#3  
-    .byte  16,  43, 108 ; V1=D4    V2=Bb2  
-    .byte  16,  43, 108 ; V1=D4    V2=Bb2  
-    .byte  16,  43, 108 ; V1=D4    V2=Bb2  
-    .byte  16,  43, 108 ; V1=D4    V2=Bb2  
-    .byte  32,  36,  86 ; V1=F4    V2=D3   
-    .byte  32,  43,  72 ; V1=D4    V2=F3   
-    .byte  32,  48,  96 ; V1=C4    V2=C3   
-    .byte  96,  36, 144 ; V1=F4    V2=F2   
-    .byte  64,  36, 144 ; V1=F4    V2=F2   
-    .byte  32,  29,  96 ; V1=A4    V2=C3   
-    .byte  32,  24,  72 ; V1=C5    V2=F3   
-    .byte  16,  36, 162 ; V1=F4    V2=Eb2  
-    .byte  16,  36, 162 ; V1=F4    V2=Eb2  
-    .byte  16,  36, 162 ; V1=F4    V2=Eb2  
-    .byte  16,  36, 162 ; V1=F4    V2=Eb2  
-    .byte  32,  32, 108 ; V1=G4    V2=Bb2  
-    .byte  32,  27,  81 ; V1=Bb4   V2=D#3  
-    .byte  16,  43, 108 ; V1=D4    V2=Bb2  
-    .byte  16,  43, 108 ; V1=D4    V2=Bb2  
-    .byte  16,  43, 108 ; V1=D4    V2=Bb2  
-    .byte  16,  43, 108 ; V1=D4    V2=Bb2  
-    .byte  32,  36,  86 ; V1=F4    V2=D3   
-    .byte  32,  43,  72 ; V1=D4    V2=F3   
-    .byte  32,  48,  96 ; V1=C4    V2=C3   
-    .byte  96,  36, 144 ; V1=F4    V2=F2   
+    .byte  64,  36,  48 ; Naaaaaa (F4/C4)
+    .byte  32,  29,  36 ; na (A4/F4)
+    .byte  32,  24,  29 ; na (C5/A4)
+    .byte   8,  16,  20 ; na- (G5/Eb5)
+    .byte   8,  18,  21 ; -na- (F5/D5)
+    .byte  16,  16,  20 ; -na- (G5/Eb5)
+    .byte  96,  18,  21 ; naaaaa (F5/D5)
+    .byte   8,  16,  20 ; na- (G5/Eb5)
+    .byte   8,  18,  21 ; -na- (F5/D5)
+    .byte  16,  16,  21 ; -na- (G5/D5)
+    .byte  64,  18,  21 ; naaaaa (F5/D5)
+    .byte  16,  20,  24 ; Hey (Eb5/C5)
+    .byte  16,  21,  27 ; Jude (D5/Bb4)
+    .byte 128,  24,  29 ; Juuuuude (C5/A4)
+    .byte  64,  36,  48 ; Naaaaaa (F4/C4)
+    .byte  32,  29,  36 ; na (A4/F4)
+    .byte  32,  24,  29 ; na (C5/A4)
+    .byte   8,  16,  20 ; na- (G5/Eb5)
+    .byte   8,  18,  21 ; -na- (F5/D5)
+    .byte  16,  16,  20 ; -na- (G5/Eb5)
+    .byte  96,  18,  21 ; naaaaa (F5/D5)
+    .byte   8,  16,  20 ; na- (G5/Eb5)
+    .byte   8,  18,  21 ; -na- (F5/D5)
+    .byte  16,  16,  21 ; -na- (G5/D5)
+    .byte  64,  18,  21 ; naaaaa (F5/D5)
+    .byte  16,  20,  24 ; Hey (Eb5/C5)
+    .byte  16,  21,  27 ; Jude (D5/Bb4)
+    .byte 128,  24,  29 ; Juuuuude (C5/A4)
+    .byte  64,  36,  48 ; Naaaaaa (F4/C4)
+    .byte  32,  29,  36 ; na (A4/F4)
+    .byte  32,  24,  29 ; na (C5/A4)
+    .byte   8,  16,  20 ; na- (G5/Eb5)
+    .byte   8,  18,  21 ; -na- (F5/D5)
+    .byte  16,  16,  20 ; -na- (G5/Eb5)
+    .byte  96,  18,  21 ; naaaaa (F5/D5)
+    .byte   8,  16,  20 ; na- (G5/Eb5)
+    .byte   8,  18,  21 ; -na- (F5/D5)
+    .byte  16,  16,  21 ; -na- (G5/D5)
+    .byte  64,  18,  21 ; naaaaa (F5/D5)
+    .byte  16,  20,  24 ; Hey (Eb5/C5)
+    .byte  16,  21,  27 ; Jude (D5/Bb4)
+    .byte 128,  24,  29 ; Juuuuude (C5/A4)
+    .byte  64,  36,  48 ; Naaaaaa (F4/C4)
+    .byte  32,  29,  36 ; na (A4/F4)
+    .byte  32,  24,  29 ; na (C5/A4)
+    .byte   8,  16,  20 ; na- (G5/Eb5)
+    .byte   8,  18,  21 ; -na- (F5/D5)
+    .byte  16,  16,  20 ; -na- (G5/Eb5)
+    .byte  96,  18,  21 ; naaaaa (F5/D5)
+    .byte   8,  16,  20 ; na- (G5/Eb5)
+    .byte   8,  18,  21 ; -na- (F5/D5)
+    .byte  16,  16,  21 ; -na- (G5/D5)
+    .byte  64,  18,  21 ; naaaaa (F5/D5)
+    .byte  16,  20,  24 ; Hey (Eb5/C5)
+    .byte  16,  21,  27 ; Jude (D5/Bb4)
+    .byte 128,  24,  29 ; Juuuuude (C5/A4)
+    .byte  64,  36,  48 ; Naaaaaa (F4/C4)
+    .byte  32,  29,  36 ; na (A4/F4)
+    .byte  32,  24,  29 ; na (C5/A4)
+    .byte   8,  16,  20 ; na- (G5/Eb5)
+    .byte   8,  18,  21 ; -na- (F5/D5)
+    .byte  16,  16,  20 ; -na- (G5/Eb5)
+    .byte  96,  18,  21 ; naaaaa (F5/D5)
+    .byte   8,  16,  20 ; na- (G5/Eb5)
+    .byte   8,  18,  21 ; -na- (F5/D5)
+    .byte  16,  16,  21 ; -na- (G5/D5)
+    .byte  64,  18,  21 ; naaaaa (F5/D5)
+    .byte  16,  20,  24 ; Hey (Eb5/C5)
+    .byte  16,  21,  27 ; Jude (D5/Bb4)
+    .byte 128,  24,  29 ; Juuuuude (C5/A4)
+    .byte  64,  36,  48 ; Naaaaaa (F4/C4)
+    .byte  32,  29,  36 ; na (A4/F4)
+    .byte  32,  24,  29 ; na (C5/A4)
+    .byte   8,  16,  20 ; na- (G5/Eb5)
+    .byte   8,  18,  21 ; -na- (F5/D5)
+    .byte  16,  16,  20 ; -na- (G5/Eb5)
+    .byte  96,  18,  21 ; naaaaa (F5/D5)
+    .byte   8,  16,  20 ; na- (G5/Eb5)
+    .byte   8,  18,  21 ; -na- (F5/D5)
+    .byte  16,  16,  21 ; -na- (G5/D5)
+    .byte  64,  18,  21 ; naaaaa (F5/D5)
+    .byte  16,  20,  24 ; Hey (Eb5/C5)
+    .byte  16,  21,  27 ; Jude (D5/Bb4)
+    .byte 128,  24,  29 ; Juuuuude (C5/A4)
+    .byte 128,  36,  48 ; Accord final F (F4/C4)
     .byte   0,   0,   0 ; Fin de partition
 
 ; ===================================================================
 ; THE BEATLES - LET IT BE (PAUL MCCARTNEY, 1970)
-; Arrangement polyphonique 2 voix pour Apple II (Electric Duet TDM)
-; 100% CHANT : Couplet 1 + Couplet 2 + Refrain complet (sans intro)
-; 76 evenements
+; Arrangement 100% CHANT PUR (sans intro, duo vocal harm 3ce)
+; Couplet 1 + Couplet 2 + Refrain complet + Cadence
+; 89 evenements
 ; Format : .byte DUREE, PERIODE_VOIX1, PERIODE_VOIX2
 ; ===================================================================
-
 LETITBE_SCORE:
-    .byte  18,  32,  96 ; V1=G4    V2=C3   
-    .byte  18,  32,  96 ; V1=G4    V2=C3   
-    .byte  18,  32,  96 ; V1=G4    V2=C3   
-    .byte  18,  29,  96 ; V1=A4    V2=C3   
-    .byte  18,  32, 102 ; V1=G4    V2=B2   
-    .byte  18,  38, 102 ; V1=E4    V2=B2   
-    .byte  18,  38, 115 ; V1=E4    V2=A2   
-    .byte  18,  43, 115 ; V1=D4    V2=A2   
-    .byte  24,  48, 144 ; V1=C4    V2=F2   
-    .byte  12,  43, 144 ; V1=D4    V2=F2   
-    .byte  18,  38,  96 ; V1=E4    V2=C3   
-    .byte  18,  38,  96 ; V1=E4    V2=C3   
-    .byte  18,  36, 129 ; V1=F4    V2=G2   
-    .byte  18,  38, 129 ; V1=E4    V2=G2   
-    .byte  18,  38, 129 ; V1=E4    V2=G2   
-    .byte  18,  43, 129 ; V1=D4    V2=G2   
-    .byte  36,  48,  96 ; V1=C4    V2=C3   
-    .byte  18,  38,  96 ; V1=E4    V2=C3   
-    .byte  18,  38,  96 ; V1=E4    V2=C3   
-    .byte  18,  43, 129 ; V1=D4    V2=G2   
-    .byte  18,  48, 129 ; V1=C4    V2=G2   
-    .byte  18,  48, 115 ; V1=C4    V2=A2   
-    .byte  18,  57, 115 ; V1=A3    V2=A2   
-    .byte  18,  48, 144 ; V1=C4    V2=F2   
-    .byte  18,  43, 129 ; V1=D4    V2=G2   
-    .byte  54,  48,  96 ; V1=C4    V2=C3   
-    .byte  18,   0,  96 ; V1=REST  V2=C3   
-    .byte  18,  32,  96 ; V1=G4    V2=C3   
-    .byte  18,  32,  96 ; V1=G4    V2=C3   
-    .byte  18,  32,  96 ; V1=G4    V2=C3   
-    .byte  18,  29,  96 ; V1=A4    V2=C3   
-    .byte  18,  32, 102 ; V1=G4    V2=B2   
-    .byte  18,  38, 102 ; V1=E4    V2=B2   
-    .byte  18,  38, 115 ; V1=E4    V2=A2   
-    .byte  18,  43, 115 ; V1=D4    V2=A2   
-    .byte  24,  48, 144 ; V1=C4    V2=F2   
-    .byte  12,  43, 144 ; V1=D4    V2=F2   
-    .byte  18,  38,  96 ; V1=E4    V2=C3   
-    .byte  18,  38,  96 ; V1=E4    V2=C3   
-    .byte  18,  36, 129 ; V1=F4    V2=G2   
-    .byte  18,  38, 129 ; V1=E4    V2=G2   
-    .byte  18,  38, 129 ; V1=E4    V2=G2   
-    .byte  18,  43, 129 ; V1=D4    V2=G2   
-    .byte  36,  48,  96 ; V1=C4    V2=C3   
-    .byte  18,  38,  96 ; V1=E4    V2=C3   
-    .byte  18,  38,  96 ; V1=E4    V2=C3   
-    .byte  18,  43, 129 ; V1=D4    V2=G2   
-    .byte  18,  48, 129 ; V1=C4    V2=G2   
-    .byte  18,  48, 115 ; V1=C4    V2=A2   
-    .byte  18,  57, 115 ; V1=A3    V2=A2   
-    .byte  18,  48, 144 ; V1=C4    V2=F2   
-    .byte  18,  43, 129 ; V1=D4    V2=G2   
-    .byte  54,  48,  96 ; V1=C4    V2=C3   
-    .byte  18,   0,  96 ; V1=REST  V2=C3   
-    .byte  18,  38, 115 ; V1=E4    V2=A2   
-    .byte  18,  43, 115 ; V1=D4    V2=A2   
-    .byte  36,  48, 115 ; V1=C4    V2=A2   
-    .byte  18,  38, 129 ; V1=E4    V2=G2   
-    .byte  18,  32, 129 ; V1=G4    V2=G2   
-    .byte  36,  29, 129 ; V1=A4    V2=G2   
-    .byte  18,  32, 144 ; V1=G4    V2=F2   
-    .byte  18,  38, 144 ; V1=E4    V2=F2   
-    .byte  18,  43, 144 ; V1=D4    V2=F2   
-    .byte  18,  48, 144 ; V1=C4    V2=F2   
-    .byte  18,  48,  96 ; V1=C4    V2=C3   
-    .byte  18,  43,  96 ; V1=D4    V2=C3   
-    .byte  18,  38, 129 ; V1=E4    V2=G2   
-    .byte  18,  43, 129 ; V1=D4    V2=G2   
-    .byte  18,  38, 144 ; V1=E4    V2=F2   
-    .byte  18,  38, 144 ; V1=E4    V2=F2   
-    .byte  18,  36, 153 ; V1=F4    V2=E2   
-    .byte  18,  38, 153 ; V1=E4    V2=E2   
-    .byte  18,  38, 170 ; V1=E4    V2=D2   
-    .byte  18,  43, 170 ; V1=D4    V2=D2   
-    .byte  54,  48, 193 ; V1=C4    V2=C2   
-    .byte  36,  48,  96 ; V1=C4    V2=C3   
+    .byte  10,  64,  76 ; When (G3/E3)
+    .byte  10,  64,  76 ; I (G3/E3)
+    .byte  20,  64,  76 ; find (G3/E3)
+    .byte  10,  64,  76 ; my- (G3/E3)
+    .byte  20,  57,  72 ; self (A3/F3)
+    .byte  20,  76,  96 ; in (E3/C3)
+    .byte  30,  64,  76 ; times (G3/E3)
+    .byte  20,  64,  76 ; of (G3/E3)
+    .byte  10,  48,  64 ; trou- (C4/G3)
+    .byte  30,  43,  51 ; ble, (D4/B3)
+    .byte  10,  38,  48 ; Mo- (E4/C4)
+    .byte  10,  38,  48 ; ther (E4/C4)
+    .byte  40,  38,  48 ; Ma- (E4/C4)
+    .byte  10,  43,  51 ; ry (D4/B3)
+    .byte  20,  43,  51 ; comes (D4/B3)
+    .byte  10,  48,  57 ; to (C4/A3)
+    .byte  40,  48,  57 ; me (C4/A3)
+    .byte  10,   0,   0 ; silence
+    .byte  10,  38,  48 ; spea- (E4/C4)
+    .byte  30,  38,  48 ; king (E4/C4)
+    .byte  20,  36,  43 ; words (F4/D4)
+    .byte  10,  38,  48 ; of (E4/C4)
+    .byte  20,  38,  48 ; wis- (E4/C4)
+    .byte  30,  43,  51 ; dom, (D4/B3)
+    .byte  10,   0,   0 ; silence
+    .byte  10,  38,  48 ; let (E4/C4)
+    .byte  10,  43,  51 ; it (D4/B3)
+    .byte  20,  43,  57 ; be (D4/A3)
+    .byte  80,  48,  64 ; . (C4/G3)
+    .byte  20,   0,   0 ; respiration
+    .byte  10,  64,  76 ; And (G3/E3)
+    .byte  20,  64,  76 ; in (G3/E3)
+    .byte  10,  64,  76 ; my (G3/E3)
+    .byte  20,  57,  72 ; hour (A3/F3)
+    .byte  20,  76,  96 ; of (E3/C3)
+    .byte  30,  64,  76 ; dark- (G3/E3)
+    .byte  20,  64,  76 ; ness (G3/E3)
+    .byte  10,  48,  64 ; she (C4/G3)
+    .byte  30,  43,  51 ; is (D4/B3)
+    .byte  10,  38,  48 ; stan- (E4/C4)
+    .byte  10,  38,  48 ; ding (E4/C4)
+    .byte  40,  38,  48 ; right (E4/C4)
+    .byte  10,  43,  51 ; in (D4/B3)
+    .byte  20,  43,  51 ; front (D4/B3)
+    .byte  10,  48,  57 ; of (C4/A3)
+    .byte  40,  48,  57 ; me (C4/A3)
+    .byte  10,   0,   0 ; silence
+    .byte  10,  38,  48 ; spea- (E4/C4)
+    .byte  30,  38,  48 ; king (E4/C4)
+    .byte  20,  36,  43 ; words (F4/D4)
+    .byte  10,  38,  48 ; of (E4/C4)
+    .byte  20,  38,  48 ; wis- (E4/C4)
+    .byte  30,  43,  51 ; dom, (D4/B3)
+    .byte  10,   0,   0 ; silence
+    .byte  10,  38,  48 ; let (E4/C4)
+    .byte  10,  43,  51 ; it (D4/B3)
+    .byte  20,  43,  57 ; be (D4/A3)
+    .byte  80,  48,  64 ; . (C4/G3)
+    .byte  20,   0,   0 ; respiration
+    .byte  10,  38,  48 ; Let (E4/C4)
+    .byte  20,  43,  51 ; it (D4/B3)
+    .byte  50,  48,  57 ; be, (C4/A3)
+    .byte  10,  38,  48 ; let (E4/C4)
+    .byte  20,  32,  38 ; it (G4/E4)
+    .byte  50,  29,  36 ; be, (A4/F4)
+    .byte  10,  32,  38 ; let (G4/E4)
+    .byte  10,  32,  38 ; it (G4/E4)
+    .byte  10,  38,  48 ; be, (E4/C4)
+    .byte  10,  43,  51 ; yeah (D4/B3)
+    .byte  40,  48,  57 ; let (C4/A3)
+    .byte  10,  57,  72 ; it (A3/F3)
+    .byte  20,  64,  76 ; be (G3/E3)
+    .byte  70,  38,  48 ; . (E4/C4)
+    .byte  10,   0,   0 ; silence
+    .byte  10,  38,  48 ; Whis- (E4/C4)
+    .byte  10,  38,  48 ; per (E4/C4)
+    .byte  10,  38,  48 ; words (E4/C4)
+    .byte  20,  36,  43 ; of (F4/D4)
+    .byte  10,  38,  48 ; wis- (E4/C4)
+    .byte  10,  38,  48 ; dom, (E4/C4)
+    .byte  40,  43,  51 ; -- (D4/B3)
+    .byte  10,  38,  48 ; let (E4/C4)
+    .byte  10,  43,  51 ; it (D4/B3)
+    .byte  20,  43,  57 ; be (D4/A3)
+    .byte  70,  48,  64 ; . (C4/G3)
+    .byte  20,  36,  57 ; Cadence F (F4/A3)
+    .byte  20,  38,  64 ; Cadence Em (E4/G3)
+    .byte  20,  43,  72 ; Cadence Dm (D4/F3)
+    .byte  90,  48,  76 ; Accord final C (C4/E3)
     .byte   0,   0,   0 ; Fin de partition
 
 IWANTYOU_SCORE:
