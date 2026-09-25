@@ -88,34 +88,30 @@ Puisque l'opération est linéaire :
 
 ---
 
-## 🎵 4. Table des Périodes Musicales et Calibrage de Justesse
+## 🎵 4. Table des Périodes Musicales et Harmonie Acoustique
 
-Dans le moteur d'*Electric Duet*, la période $P$ d'une note est le nombre de passages dans la boucle de 79 cycles constituant une demi-période d'onde carrée.
-La formule physique exacte calibrée sur l'horloge NTSC Apple II (1,020484 MHz) est :
-$$P = \mathrm{round}\left( \frac{F_{carrier}}{2 \cdot f} \right) \quad \text{ou en demi-périodes : } P = \mathrm{round}\left( \frac{12\,917{,}5}{f} \right)$$
+Dans le moteur d'*Electric Duet*, la période $P$ d'une note est le nombre de passages dans la boucle de 79 cycles constituant une période d'oscillation.
+Les partitions de Paul Lutus et les réductions classiques utilisent la table standard calibrée pour maximiser la consonance des intervalles harmoniques purs (octaves 2:1, quintes pythagoriciennes 3:2, quartes 4:3, tierces 6:5) :
 
-*(L'ancienne constante historique approximative de 12 600 rendait toutes les notes 43 cents trop aiguës et faussait les intervalles harmoniques entre le grave et l'aigu de près d'un quart de ton).*
-
-Table des valeurs étalonnées :
-| Note | Fréquence $f$ | Période décimale $P$ | Période hexadécimale | Justesse |
+Table des périodes canoniques :
+| Note | Octave 2 (Grave) | Octave 3 (Basse) | Octave 4 (Médium) | Octave 5 (Aigu) |
 | :---: | :---: | :---: | :---: | :---: |
-| **Sol 2 (G2)** | 98,00 Hz | 132 | `$84` | -2.5 cents |
-| **La 2 (A2)** | 110,00 Hz | 117 | `$75` | +6.4 cents |
-| **Si♭ 2 (Bb2)**| 116,54 Hz | 111 | `$6F` | -2.5 cents |
-| **Do 3 (C3)** | 130,81 Hz | 99 | `$63` | -4.4 cents |
-| **Ré 3 (D3)** | 146,83 Hz | 88 | `$58` | -0.5 cents |
-| **Fa 3 (F3)** | 174,61 Hz | 74 | `$4A` | +0.4 cents |
-| **Sol 3 (G3)** | 196,00 Hz | 66 | `$42` | -2.5 cents |
-| **Do 4 (C4)** | 261,63 Hz | 49 | `$31` | -4.4 cents |
-| **Ré 4 (D4)** | 293,66 Hz | 44 | `$2C` | -0.5 cents |
-| **Mi♭ 4 (Eb4)**| 311,13 Hz | 42 | `$2A` | +19.9 cents |
-| **Fa 4 (F4)** | 349,23 Hz | 37 | `$25` | +0.4 cents |
-| **Sol 4 (G4)** | 392,00 Hz | 33 | `$21` | +0.1 cents |
-| **La 4 (A4)** | 440,00 Hz | 29 | `$1D` | -21.4 cents |
-| **Si♭ 4 (Bb4)**| 466,16 Hz | 28 | `$1C` | +18.0 cents |
-| **Si 4 (B4)** | 493,88 Hz | 26 | `$1A` | -8.7 cents |
-| **Do 5 (C5)** | 523,25 Hz | 25 | `$19` | +21.8 cents |
-| **Ré 5 (D5)** | 587,33 Hz | 22 | `$16` | -0.5 cents |
+| **Do (C)** | - | 96 (`$60`) | 48 (`$30`) | 24 (`$18`) |
+| **Do# / Ré♭** | - | - | - | 22 (`$16`) |
+| **Ré (D)** | - | 86 / 84* | 43 (`$2B`) | 21 (`$15`) |
+| **Mi♭ (Eb)** | - | - | 40 (`$28`) | 20 (`$14`) |
+| **Mi (E)** | - | 76 (`$4C`) | 38 (`$26`) | 19 (`$13`) |
+| **Fa (F)** | - | 72 (`$48`) | 36 (`$24`) | 18 (`$12`) |
+| **Fa# (F#)** | - | - | 34 (`$22`) | 17 (`$11`) |
+| **Sol (G)** | 128 (`$80`) | 64 (`$40`) | 32 (`$20`) | 16 (`$10`) |
+| **La♭ (Ab)** | 120* (`$78`) | 60 (`$3C`) | - | - |
+| **La (A)** | 114 (`$72`) | 57 (`$39`) | 29 (`$1D`) | 14 (`$0E`) |
+| **Si♭ (Bb)** | 108 (`$6C`) | 54 (`$36`) | 27 (`$1B`) | 13 (`$0D`) |
+| **Si (B)** | 102 (`$66`) | 51 (`$33`) | 26 (`$1A`) | - |
+
+*\*Notes étalonnées en justesse harmonique :*
+* **Ré 3 pédale ($P=84$)** : verrouillé en double octave parfaite $4:1$ sous la longue tenue du violon en Ré 5 ($P=21$, $84 = 4 \times 21$), éliminant tout battement acoustique.
+* **La♭ 2 ($P=120$)** : aligné en octave exacte $2:1$ sous La♭ 3 ($P=60$) et en 17e majeure pure $5:1$ sous Do 5 ($P=24$).
 
 Format d'un événement musical (3 octets) :
 1. `DURÉE` : Décompte en unités de ~20,2 ms ($256 \times 79\text{ cycles}$).
