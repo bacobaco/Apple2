@@ -131,35 +131,33 @@ Issue du Livre 1 du *Clavecin bien tempéré* (1722) :
 
 ### 2. The Beatles — Hey Jude (Paul McCartney, 1968)
 Le chef-d'œuvre universellement célébré des Beatles (single Apple Records) :
-* **17 mesures complètes** à ~95 BPM (43 secondes de musique).
+* **70 événements musicaux** à ~95 BPM (~42 secondes de musique).
 * **Tonalité originale** : Fa majeur (F, C, C7, Bb).
 * **Voix 1 (Chant Lead)** :
   - L'introduction vocale légendaire de Paul McCartney (*« Hey Jude, don't make it bad / Take a sad song and make it better... »*).
   - Deuxième partie du couplet (*« Remember to let her into your heart / Then you can start to make it better »*).
-  - L'apothéose du Chœur final : le célébrissime refrain universel (*« Naaaa, na, na, na-na-na-na, na-na-na-na, Hey Jude! »*) avec les envolées aiguës caractéristiques de Paul McCartney jusqu'au Fa5 !
+  - L'apothéose du Chœur final : le célébrissime refrain universel (*« Naaaa, na, na, na-na-na-na, na-na-na-na, Hey Jude! »*) avec progression harmonique descendante pure (Fa4 – Mi♭4 – Ré4 – Do4 – Fa4) et variations expressives.
 * **Voix 2 (Piano & Basse)** :
-  - Les accords arpégés et la ligne de basse descendante au piano (Fa, Do, Do7, Si♭).
+  - Les accords au piano et la basse marchante (Fa, Do, Do7, Si♭).
   - La progression d'accords mythique du final en Fa – Mi♭ – Si♭ – Fa.
 
 ### 3. The Beatles — Let It Be (Paul McCartney, 1970)
 L'hymne gospel-rock inoubliable des Beatles :
-* **12 mesures complètes** à ~83 BPM (34 secondes de musique).
-* **Tonalité originale** : Do majeur (C, G, Am, F).
-* **Voix 1 (Chant)** :
-  - Couplet complet (*« When I find myself in times of trouble, Mother Mary comes to me... »*).
-  - Refrain magistral (*« Let it be, let it be, whisper words of wisdom, let it be... »*).
-* **Voix 2 (Piano d'accompagnement)** :
-  - La fameuse progression descendante au piano en Do – Sol/Si – La mineur – Fa majeur.
+* **84 événements musicaux** à ~75 BPM (~32 secondes de musique).
+* **Tonalité originale** : Do majeur (C, G/B, Am, F).
+* **Déroulement complet et fidèle** :
+  1. **Intro Piano culte (4 mesures)** : les accords en arpèges Do – Sol/Si – La mineur – Fa majeur, suivis de la légendaire descente de basse et d'harmonie Fa – Mi m – Ré m – Do.
+  2. **Couplet 1** : mélodie vocale intégrale (*« When I find myself in times of trouble, Mother Mary comes to me, speaking words of wisdom, let it be... »*).
+  3. **Refrain universel** : (*« Let it be, let it be, let it be, yeah let it be, whisper words of wisdom, let it be... »*).
 
 ### 4. The Beatles — I Want You (She's So Heavy) (John Lennon, 1969)
 Le riff proto-heavy metal / blues-rock mythique d'*Abbey Road* :
-* **16 mesures complètes** en 6/8 (~38 secondes de musique).
-* **Tonalité originale** : Ré mineur (Dm, Dm/E, F6, E7♭9, B♭7, A7).
-* **Voix 1 (Guitare Arpège & Chant Blues)** :
-  - L'arpège gothique légendaire en Ré mineur.
-  - Le chant habité de John Lennon (*« I want you, I want you so bad... She's so... HEAVY! »*).
-* **Voix 2 (Riff Lourd & Basse)** :
-  - La descente chromatique pesante et hypnotique qui a inspiré le doom metal et le hard rock.
+* **76 événements musicaux** en 6/8 (~34 secondes de musique).
+* **Tonalité originale** : Ré mineur (Dm, Dm/E, Dm/F, E7♭9, B♭7, A7aug).
+* **Structure en 3 temps forts** :
+  1. **Arpèges gothiques d'ouverture** : la fameuse progression en Ré mineur en 6/8.
+  2. **Transition vocale bluesy** : la montée passionnée de John Lennon (*« She's so... HEAVY! »*).
+  3. **Le Riff lourd titanesque en octaves** : l'ostinato légendaire joué en puissante harmonie à l'octave par les deux voix, jusqu'à la coupure nette brutale caractéristique du morceau original.
 
 ---
 
