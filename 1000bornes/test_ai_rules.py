@@ -200,7 +200,90 @@ def test_ai_scenarios():
     assert new_p_battle == 5, f"ERROR: P_BATTLE should be 5 (FEUROUGE), but is {new_p_battle}"
     print("PASS: Thomson successfully attacked player with Feu Rouge, and P_BATTLE is now 5!")
 
-    print("\nALL AI RULE TESTS PASSED PERFECTLY!")
+    # TEST 5: Coup-fourre on Limitation while stopped by Accident
+    # Player has Accident (2) on battle, Limitation (4) on limit, and holds CARD_VEHPRIO (19)
+    # Expected: Limitation is cleared (0), VP botte activated, CF count incremented, BUT Accident remains (2)!
+    p_cf_count_addr = labels['P_CF_COUNT']
+    p_limit_addr = labels['P_LIMIT']
+    deck_remain_addr = labels['DECK_REMAIN']
+    deck_data_addr = labels['DECK_DATA']
+
+    mem.mem[labels['ClearTopBar']] = 0x60
+    mem.mem[labels['PrintTopBarText']] = 0x60
+    mem.mem[labels['FanfareSound']] = 0x60
+    mem.mem[labels['ErrorBuzzSound']] = 0x60
+    mem.mem[labels['DelayRoutine']] = 0x60
+    mem.mem[labels['BeepSound']] = 0x60
+    mem.mem[labels['UpdateScoresAndDrawCount']] = 0x60
+    mem.mem[labels['PlayerDrawCardSound']] = 0x60
+    mem.mem[labels['ThomsonDrawCardSound']] = 0x60
+    mem.mem[labels['MusicCoupFourre']] = 0x60
+
+    mem.mem[p_battle_addr] = 2     # CARD_ACCIDENT
+    mem.mem[p_limit_addr] = 4      # CARD_LIMITATION
+    mem.mem[p_bottes_addr + 3] = 0 # VP not activated yet
+    mem.mem[p_cf_count_addr] = 0
+    mem.mem[deck_remain_addr] = 10
+    for i in range(10):
+        mem.mem[deck_data_addr + i] = 12 # 100km
+
+    p_hand_addr = labels['P_HAND']
+    mem.mem[p_hand_addr + 0] = 19   # CARD_VEHPRIO
+    mem.mem[p_hand_addr + 1] = 12   # 100km
+    mem.mem[p_hand_addr + 2] = 13   # 75km
+    mem.mem[p_hand_addr + 3] = 14   # 50km
+    mem.mem[p_hand_addr + 4] = 15   # 25km
+    mem.mem[p_hand_addr + 5] = 10   # Feu Vert
+    mem.mem[p_hand_addr + 6] = 0
+
+    mpu.sp = 0xFD
+    mem.mem[0x01FE] = 0x3F
+    mem.mem[0x01FF] = 0xFE
+    mpu.pc = labels['CheckAndExecuteCoupFourre']
+
+    steps = 0
+    while mpu.pc != 0x3FFF and steps < 20000:
+        mpu.step()
+        steps += 1
+
+    print(f"Test 5 - Coup-Fourre on Limitation with Accident: CF count = {mem.mem[p_cf_count_addr]}, Limit = {mem.mem[p_limit_addr]}, Battle = {mem.mem[p_battle_addr]}")
+    assert mem.mem[p_cf_count_addr] == 1, "ERROR: Coup-fourre was not counted!"
+    assert mem.mem[p_bottes_addr + 3] == 1, "ERROR: VP botte was not set!"
+    assert mem.mem[p_limit_addr] == 0, "ERROR: Limitation was not cleared!"
+    assert mem.mem[p_battle_addr] == 2, "ERROR: Accident must NOT be cleared by VP on limitation!"
+    print("PASS: Coup-Fourre on Limitation correctly cleared limitation, awarded +300 CF, and preserved Accident!")
+
+    # TEST 6: Coup-fourre on Accident with As du Volant
+    mem.mem[p_battle_addr] = 2     # CARD_ACCIDENT
+    mem.mem[p_limit_addr] = 0
+    mem.mem[p_bottes_addr + 1] = 0 # As du Volant
+    mem.mem[p_cf_count_addr] = 0
+    mem.mem[p_hand_addr + 0] = 17  # CARD_ASVOLANT
+    mem.mem[p_hand_addr + 1] = 12
+    mem.mem[p_hand_addr + 2] = 13
+    mem.mem[p_hand_addr + 3] = 14
+    mem.mem[p_hand_addr + 4] = 15
+    mem.mem[p_hand_addr + 5] = 10
+    mem.mem[p_hand_addr + 6] = 0
+
+    mpu.sp = 0xFD
+    mem.mem[0x01FE] = 0x3F
+    mem.mem[0x01FF] = 0xFE
+    mpu.pc = labels['CheckAndExecuteCoupFourre']
+
+    steps = 0
+    while mpu.pc != 0x3FFF and steps < 20000:
+        mpu.step()
+        steps += 1
+
+    print(f"Test 6 - Coup-Fourre on Accident: CF count = {mem.mem[p_cf_count_addr]}, Battle = {mem.mem[p_battle_addr]}")
+    assert mem.mem[p_cf_count_addr] == 1, "ERROR: Coup-fourre was not counted!"
+    assert mem.mem[p_bottes_addr + 1] == 1, "ERROR: As du Volant botte was not set!"
+    assert mem.mem[p_battle_addr] == 10, "ERROR: Accident must be cured with Feu Vert (10)!"
+    print("PASS: Coup-Fourre on Accident cured hazard and gave Feu Vert!")
+
+    print("\nALL AI AND GAME RULE TESTS PASSED PERFECTLY!")
 
 if __name__ == '__main__':
     test_ai_scenarios()
+

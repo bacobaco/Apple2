@@ -91,7 +91,24 @@ Ces créations combinent les contraintes matérielles d'époque (1 MHz, 48 Ko / 
 
 ---
 
-### 8. 🔬 Expérimentations & Démonstrateurs
+### 8. 🎼 Synthèse Polyphonique 2 Voix : Jukebox Apple II ($C030)
+* **Dossier du projet** : [`musique/`](file:///musique/) (Documentation détaillée : [`musique/README.md`](file:///musique/README.md))
+* **Fichiers sources** : [`bach.asm`](file:///musique/bach.asm), [`bach_duet_data.asm`](file:///musique/bach_duet_data.asm)
+* **Mode d'affichage** : Mode Texte 40×24 avec visualiseur contrapuntique dynamique en temps réel.
+* **Moteur & Caractéristiques** :
+  - **Moteur Electric Duet de Paul Lutus (1981)** réimplanté en assembleur 6502 pur (boucle ultra-optimisée de 79 cycles, fréquence d'échantillonnage de 12,94 kHz).
+  - **Multiplexage temporel (TDM) sans distorsion d'intermodulation** : deux voix indépendantes restituées avec une clarté cristalline sur le haut-parleur 1-bit `$C030`.
+  - **Jukebox 4 titres au répertoire** :
+    1. *J.S. Bach : Fugue No. 2 en Do mineur (BWV 847)* (*Le Clavecin bien tempéré I*, 154 événements contrapuntiques).
+    2. *The Beatles : Hey Jude (1968)* (Paul McCartney - mélodie vocale, piano et refrain légendaire « Na-na-na »).
+    3. *The Beatles : Let It Be (1970)* (Paul McCartney - accompagnement piano et chant).
+    4. *The Beatles : I Want You (She's So Heavy) (1969)* (John Lennon - riff hypnotique 6/8 en Ré mineur et arpèges).
+  - **Visualiseur dynamique 40×24** : Titres, voix actives, notes jouées en direct et tuyaux d'orgue animés.
+  - **Contrôles interactifs** : Menu de sélection (`1` à `4`), interruption / retour au menu par n'importe quelle touche, et sortie propre vers DOS 3.3 (`Q`).
+
+---
+
+### 9. 🔬 Expérimentations & Démonstrateurs
 * [`pi.asm`](file:///pi.asm) : Moteur de calcul haute précision des décimales du nombre $\pi$ en 6502 (jusqu'à 4000 décimales).
 * [`digits.asm`](file:///digits.asm) : Polices et affichage numérique vectoriel/bitmap HGR.
 
@@ -141,7 +158,7 @@ python list_cat.py AI-ASM.DSK
 
 ### 4. Jouer dans l'émulateur
 Insérez l'image [`AI-ASM.DSK`](file:///AI-ASM.DSK) dans le lecteur 1 de votre émulateur :
-- Un menu interactif démarre automatiquement au boot (`HELLO`) et vous permet de sélectionner n'importe quel jeu (`1` à `9`, `A`, `S`, `P`).
+- Un menu interactif démarre automatiquement au boot (`HELLO`) et vous permet de sélectionner n'importe quel jeu (`1` à `9`, `A`, `B`, `S`, `P`, `M`).
 - Vous pouvez également lancer directement un jeu depuis le prompt Applesoft `]` :
 ```basic
 BRUN INVADERS
@@ -158,6 +175,7 @@ BRUN SNAKE-KIMI
 BRUN SNAKE
 RUN SNAKE_2L
 BRUN PI
+BRUN BACH
 ```
 
 ---

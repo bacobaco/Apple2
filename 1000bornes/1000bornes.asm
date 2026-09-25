@@ -355,7 +355,6 @@ _no_src_hi_inc:
     lda CARD_Y
     and #$07            ; Paliers de 8 scanlines (8, 16, 24, 32)
     bne _no_anim_step
-    jsr CardSlideSound
     lda #16             ; ~20 ms par palier (total 4 * 20ms = ~80 ms)
     jsr DelayRoutine
 _no_anim_step:
@@ -2764,32 +2763,32 @@ CheckAndExecuteCoupFourre:
     bne _cf_chk_acc
     lda #CARD_CITERNE
     jsr FindPlayerHandCard
-    bcc _no_cf_possible
-    jmp _do_cf_execute
+    bcc _cf_chk_limit
+    jmp _do_cf_battle_execute
 
 _cf_chk_acc:
     cmp #CARD_ACCIDENT
     bne _cf_chk_crev
     lda #CARD_ASVOLANT
     jsr FindPlayerHandCard
-    bcc _no_cf_possible
-    jmp _do_cf_execute
+    bcc _cf_chk_limit
+    jmp _do_cf_battle_execute
 
 _cf_chk_crev:
     cmp #CARD_CREVAISON
     bne _cf_chk_feu
     lda #CARD_INCREVABLE
     jsr FindPlayerHandCard
-    bcc _no_cf_possible
-    jmp _do_cf_execute
+    bcc _cf_chk_limit
+    jmp _do_cf_battle_execute
 
 _cf_chk_feu:
     cmp #CARD_FEUROUGE
     bne _cf_chk_limit
     lda #CARD_VEHPRIO
     jsr FindPlayerHandCard
-    bcc _no_cf_possible
-    jmp _do_cf_execute
+    bcc _cf_chk_limit
+    jmp _do_cf_battle_execute
 
 _cf_chk_limit:
     lda P_LIMIT
@@ -2798,7 +2797,7 @@ _cf_chk_limit:
     lda #CARD_VEHPRIO
     jsr FindPlayerHandCard
     bcc _no_cf_possible
-    jmp _do_cf_execute
+    jmp _do_cf_limit_execute
 
 _no_cf_possible:
     jsr ClearTopBar
@@ -2813,36 +2812,12 @@ _no_cf_possible:
     jsr DelayRoutine
     rts
 
-_do_cf_execute:
+_do_cf_battle_execute:
     stx CF_HAND_IDX
     sta PLAY_CARD
-    ; 1. Active la botte dans P_BOTTES
-    sec
-    sbc #CARD_CITERNE   ; 0..3
-    tax
-    lda #1
-    sta P_BOTTES,x
-    cpx #3              ; Vehicule Prioritaire ?
-    bne +
-    sta P_STARTED
-+
-    ; Fait apparaitre la botte dans les slots 8..11 !
-    lda P_BOTTE_COUNT
-    cmp #4
-    bcs _p_skip_cf_botte_draw
-    clc
-    adc #8
-    sta SLOT_NUM
-    inc P_BOTTE_COUNT
-    lda PLAY_CARD
-    sta CARD_ID
-    lda #1
-    sta ANIM_CARD_FLAG  ; Animation glissee de la botte qui apparait !
-    jsr DrawCardInSlot
-    lda #0
-    sta ANIM_CARD_FLAG
-_p_skip_cf_botte_draw:
-    ; 2. Bonus Coup-Fourre (+300) et depart d'office avec Feu Vert officiel
+    jsr _cf_register_and_draw_botte
+
+    ; 2. Bonus Coup-Fourre (+300) et depart d'office avec Feu Vert officiel sur la bataille
     inc P_CF_COUNT
     lda #1
     sta P_STARTED
@@ -2855,23 +2830,83 @@ _p_skip_cf_botte_draw:
     sta CARD_ID
     jsr DrawCardInSlot
 
-    ; Si Coup-Fourre Vehicule Prioritaire sur Limitation :
+    ; Si la botte etait Vehicule Prioritaire (Feu Rouge), annule aussi la limitation eventuelle :
     lda PLAY_CARD
     cmp #CARD_VEHPRIO
-    bne +
+    bne _cf_finish_turn
     lda #0
     sta P_LIMIT
     sta P_LIMIT_UNDER
     lda #16
     sta SLOT_NUM
     jsr EraseSlot
-+
+    jmp _cf_finish_turn
+
+_do_cf_limit_execute:
+    stx CF_HAND_IDX
+    sta PLAY_CARD
+    jsr _cf_register_and_draw_botte
+
+    ; 2. Bonus Coup-Fourre (+300)
+    inc P_CF_COUNT
+    lda #1
+    sta P_STARTED
+
+    ; Annule la Limitation :
+    lda #0
+    sta P_LIMIT
+    sta P_LIMIT_UNDER
+    lda #16
+    sta SLOT_NUM
+    jsr EraseSlot
+
+    ; Si la bataille etait Feu Rouge, Vehicule Prioritaire annule aussi le Feu Rouge :
+    lda P_BATTLE
+    cmp #CARD_FEUROUGE
+    bne _cf_finish_turn
+    lda #CARD_FEUVERT
+    sta P_BATTLE
+    sta P_BATTLE_UNDER
+    lda #17
+    sta SLOT_NUM
+    lda #CARD_FEUVERT
+    sta CARD_ID
+    jsr DrawCardInSlot
+
+_cf_finish_turn:
     ldx CF_HAND_IDX
     stx CURSOR_POS
     jsr RemovePlayedCard
     jsr DrawPlayerCardFromDeck
     jsr RedrawPlayerHand
     jsr AnnounceCoupFourre
+    rts
+
+_cf_register_and_draw_botte:
+    ; 1. Active la botte dans P_BOTTES
+    lda PLAY_CARD
+    sec
+    sbc #CARD_CITERNE   ; 0..3
+    tax
+    lda #1
+    sta P_BOTTES,x
+
+    ; Fait apparaitre la botte dans les slots 8..11 !
+    lda P_BOTTE_COUNT
+    cmp #4
+    bcs _cf_skip_draw_botte
+    clc
+    adc #8
+    sta SLOT_NUM
+    inc P_BOTTE_COUNT
+    lda PLAY_CARD
+    sta CARD_ID
+    lda #1
+    sta ANIM_CARD_FLAG  ; Animation glissee de la botte qui apparait !
+    jsr DrawCardInSlot
+    lda #0
+    sta ANIM_CARD_FLAG
+_cf_skip_draw_botte:
     rts
 
 FindPlayerHandCard:
@@ -2964,7 +2999,7 @@ _dpcd_found_slot:
     lda #0
     sta ANIM_CARD_FLAG
     jsr UpdateScoresAndDrawCount
-    jsr BeepSound
+    jsr PlayerDrawCardSound
 _dpcd_empty:
     rts
 
@@ -3435,8 +3470,8 @@ AnnounceCoupFourre:
     sta STR_HI
     lda #4
     jsr PrintTopBarText
-    jsr FanfareSound
-    lda #120            ; ~1.5 seconde de pause pour savourer le coup-fourre et admirer la botte
+    jsr MusicCoupFourre ; Musique triomphale de Coup-Fourre !
+    lda #40             ; ~0.5s de pause d'admiration apres la musique
     jsr DelayRoutine
     rts
 
@@ -4439,6 +4474,7 @@ _dtcd_found:
     jsr DrawCardFromDeck
     ldx TEMP_X
     sta T_HAND,x
+    jsr ThomsonDrawCardSound
 _dtcd_done:
     rts
 
@@ -5180,6 +5216,125 @@ _ff_n4:
     bne _ff_n4
     rts
 
+; =============================================================================
+; EFFET SONORE : TIRAGE D'UNE CARTE PAR LE JOUEUR
+; Carillon cristallin ascendant (deux notes vives et joyeuses Mi 5 -> Do 6)
+; =============================================================================
+PlayerDrawCardSound:
+    ; Note 1 : Mi 5 (~660 Hz, Y=150)
+    ldx #18
+_pds_n1:
+    bit SPEAKER
+    ldy #150
+-   dey
+    bne -
+    dex
+    bne _pds_n1
+
+    ; Micro-pause (~6 ms)
+    ldy #25
+-   dey
+    bne -
+
+    ; Note 2 : Do 6 (~1046 Hz, Y=93)
+    ldx #32
+_pds_n2:
+    bit SPEAKER
+    ldy #93
+-   dey
+    bne -
+    dex
+    bne _pds_n2
+    rts
+
+; =============================================================================
+; EFFET SONORE : TIRAGE D'UNE CARTE PAR THOMSON
+; Double bip electronique caracteristique Thomson (deux impulsions numeriques franches)
+; =============================================================================
+ThomsonDrawCardSound:
+    ; Bip 1 : Frequence moyenne (~580 Hz, Y=175)
+    ldx #22
+_tds_n1:
+    bit SPEAKER
+    ldy #175
+-   dey
+    bne -
+    dex
+    bne _tds_n1
+
+    ; Pause numerique (~20 ms)
+    lda #3
+    jsr DelayRoutine
+
+    ; Bip 2 : Frequence plus grave (~450 Hz, signature Thomson, Y=225)
+    ldx #26
+_tds_n2:
+    bit SPEAKER
+    ldy #225
+-   dey
+    bne -
+    dex
+    bne _tds_n2
+    rts
+
+; =============================================================================
+; MUSIQUE TRIOMPHALE DE COUP-FOURRE (9 NOTES ENTABULEES)
+; =============================================================================
+MusicCoupFourre:
+    ldx #0
+_mcf_note_loop:
+    lda TblCF_Notes,x
+    beq _mcf_done           ; Octet 0 = fin de la melodie
+    sta TEMP_A              ; Hauteur (delai Y de demi-periode)
+    inx
+    lda TblCF_Notes,x
+    sta NUM_LO              ; Nombre d'impulsions (octet bas)
+    inx
+    lda TblCF_Notes,x
+    sta NUM_HI              ; Nombre d'impulsions (octet haut)
+    inx
+    lda TblCF_Notes,x
+    sta TEMP_X              ; Delai de pause d'articulation
+    inx
+    stx TEMP_Y              ; Sauvegarde l'index dans la table
+
+    ; Boucle de generation de la note
+_mcf_pulse:
+    bit SPEAKER
+    ldy TEMP_A
+-   dey
+    bne -
+    lda NUM_LO
+    bne +
+    dec NUM_HI
++   dec NUM_LO
+    lda NUM_LO
+    ora NUM_HI
+    bne _mcf_pulse
+
+    ; Pause d'articulation entre les notes
+    lda TEMP_X
+    beq +
+    jsr DelayRoutine
++   ldx TEMP_Y
+    jmp _mcf_note_loop
+
+_mcf_done:
+    rts
+
+TblCF_Notes:
+    ; Format : [Hauteur Y], [Impulsions LO], [Impulsions HI], [Pause inter-note]
+    .byte   250, <63,  >63,  2      ; Note 1 : Sol 4
+    .byte   190, <84,  >84,  2      ; Note 2 : Do 5
+    .byte   150, <105, >105, 2      ; Note 3 : Mi 5
+    .byte   125, <188, >188, 3      ; Note 4 : Sol 5
+    .byte    93, <335, >335, 4      ; Note 5 : Do 6 (sommet)
+    .byte    99, <178, >178, 2      ; Note 6 : Si 5
+    .byte    93, <188, >188, 2      ; Note 7 : Do 6
+    .byte    82, <282, >282, 3      ; Note 8 : Re 6
+    .byte    93, <941, >941, 6      ; Note 9 : Do 6 (final triomphal !)
+    .byte   0                       ; Marqueur de fin
+
 DelayRoutine:
     pha
     txa
@@ -5207,11 +5362,6 @@ _del_inner:
     rts
 
 CardSlideSound:
-    bit SPEAKER
-    ldy #35
--   dey
-    bne -
-    bit SPEAKER
     rts
 
 WaitThomsonThink:

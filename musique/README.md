@@ -1,0 +1,192 @@
+# 🎼 Fugues de J.S. Bach en 2 Voix Polyphoniques sur Apple II
+
+> **Synthèse acoustique polyphonique à deux voix pures sur le haut-parleur 1-bit (`$C030`) de l'Apple II, utilisant le moteur officiel *Electric Duet* de Paul Lutus (1981).**
+
+---
+
+## 🏛️ 1. Le Défi Matériel : Polyphonie sur Haut-Parleur 1-Bit
+
+L'Apple II (conçu par Steve Wozniak en 1977) ne possède **aucun processeur sonore**, aucun générateur de son programmable (comme le PSG AY-3-8910 ou le SID 6581) et aucun convertisseur numérique-analogique (DAC).
+
+La seule interface acoustique est une bascule logique 1-bit connectée à l'adresse mémoire **`$C030`** :
+* Tout accès en lecture ou écriture (`LDA $C030`, `BIT $C030`) **inverse l'état physique de la bascule** du haut-parleur.
+* Chaque basculement déplace le cône d'avant en arrière, produisant une impulsion acoustique discrète (un "click").
+
+---
+
+## ⚠️ 2. Pourquoi la Naïve "Synthèse DDS" Produisait du Bruit
+
+Lors d'une première tentative, on pourrait être tenté de faire tourner deux accumulateurs de phase 16-bits (synthèse DDS) et d'inverser `$C030` à chaque fois que la Voix 1 ou la Voix 2 déborde :
+
+```assembly
+    ; --- TENTATIVE NAÏVE : SOURCE DE BRUIT PUR ---
+    CLC
+    LDA ACC1_L : ADC FREQ1_L : STA ACC1_L
+    LDA ACC1_H : ADC FREQ1_H : STA ACC1_H
+    BCC +
+    BIT SPEAKER         ; Toggle flip-flop si débordement Voix 1
++
+    CLC
+    LDA ACC2_L : ADC FREQ2_L : STA ACC2_L
+    LDA ACC2_H : ADC FREQ2_H : STA ACC2_H
+    BCC +
+    BIT SPEAKER         ; Toggle flip-flop si débordement Voix 2
++
+```
+
+### Le Piège Mathématique : Le Ou Exclusif (XOR) et la Modulation en Anneau
+Sur une bascule 1-bit (flip-flop T) :
+* Inverser la bascule à chaque front de la Voix 1 et à chaque front de la Voix 2 applique mathématiquement l'opération logique **OU Exclusif (XOR)** :
+  $$S(t) = S_1(t) \oplus S_2(t)$$
+* Or, en traitement du signal, le XOR logique de deux ondes carrées bipolaires $\pm 1$ correspond exactement à leur **multiplication temporelle (modulation en anneau / Ring Modulation)** :
+  $$S_1(t) \times S_2(t) = \cos(\omega_1 t) \times \cos(\omega_2 t) = \frac{1}{2} [\cos((\omega_1 + \omega_2)t) + \cos((\omega_1 - \omega_2)t)]$$
+* **Conséquence catastrophique :**
+  Les fréquences fondamentales $f_1$ et $f_2$ **disparaissent complètement du spectre sonore** ! À leur place apparaissent des dizaines de bandes latérales parasites et inharmoniques :
+  $$|f_1 - f_2|, \quad f_1 + f_2, \quad 3f_1 \pm f_2, \quad 5f_1 \pm 3f_2\dots$$
+  Dès que la deuxième voix (le Soprano) entre dans la fugue, toute musicalité est détruite et remplacée par un **bourdonnement métallique agressif et strident** (du pur bruit d'intermodulation).
+
+---
+
+## 💡 3. La Solution de Paul Lutus : *Electric Duet* (1981)
+
+En 1981, **Paul Lutus** ([arachnoid.com/electric_duet](https://arachnoid.com/electric_duet/index.html)) a publié *Electric Duet*, le chef-d'œuvre absolu de la synthèse 2 voix sur Apple II.
+
+Paul Lutus ne fait **jamais de XOR** sur la bascule. Il utilise le **Multiplexage Temporel (Time-Domain Multiplexing - TDM)** associé à la **Modulation de Largeur d'Impulsion (PWM)**.
+
+### Le Principe du Découpage à 12,94 kHz
+1. La boucle 6502 tourne à temps **rigoureusement constant : exactement 79 cycles d'horloge**.
+   $$F_{carrier} = \frac{1\,020\,484\text{ Hz}}{79} \approx 12\,937\text{ Hz}$$
+   Cette fréquence ultrasonore se situe tout en haut du spectre audible (ou au-delà de la réponse du haut-parleur).
+
+2. À l'intérieur de cette fenêtre de 79 cycles, le moteur détermine l'état de chaque voix (0 ou 1) :
+   * **Voix 1 = 0 et Voix 2 = 0** : Le haut-parleur reste à 0 pendant les 79 cycles (Duty cycle = 0%, tension moyenne = **0,0 V**).
+   * **Voix 1 = 1 et Voix 2 = 1** : Le haut-parleur reste à 1 pendant les 79 cycles (Duty cycle = 100%, tension moyenne = **1,0 V**).
+   * **Une seule voix active** (1, 0) ou (0, 1) : Le haut-parleur est commuté à la moitié de la boucle (Duty cycle = 50% à 12,9 kHz, tension moyenne = **0,5 V**).
+
+```
+                      BOUCLE DE 79 CYCLES (12,94 kHz)
+  ───────────────────────────────────────────────────────────────────
+  État (0, 0) :   [           HP = BAS (0.0 V)                      ]
+  État (1, 0) :   [    HP = HAUT (40c)    ][    HP = BAS (39c)      ] -> Moyenne = 0.5 V
+  État (0, 1) :   [    HP = HAUT (40c)    ][    HP = BAS (39c)      ] -> Moyenne = 0.5 V
+  État (1, 1) :   [           HP = HAUT (1.0 V)                     ]
+  ───────────────────────────────────────────────────────────────────
+```
+
+### Le Filtrage Mécanique du Cône : Une Sommation Linéaire Pure
+La membrane physique du haut-parleur de l'Apple II possède une masse et une inertie mécanique qui l'empêchent de vibrer à 12,94 kHz. Elle se comporte comme un **filtre analogique passe-bas acoustique d'ordre 2**.
+
+Le déplacement réel de la membrane $x(t)$ correspond donc à la valeur moyenne lissée du signal PWM :
+$$x(t) \propto \frac{V_1(t) + V_2(t)}{2}$$
+
+**C'est une SOMMATION LINÉAIRE PARFAITE.**
+Puisque l'opération est linéaire :
+* Aucun produit de battement ($f_1 \pm f_2$) n'est créé.
+* La Voix 1 sonne avec sa fondamentale pure.
+* La Voix 2 sonne avec sa fondamentale pure.
+* On entend un duo cristallin et harmonieux à deux voix réelles !
+
+---
+
+## 🎵 4. Table des Périodes Musicales
+
+Dans le moteur de Lutus, la période d'une note est le nombre de boucles de 79 cycles constituant une demi-période d'onde carrée.
+La formule de conversion est :
+$$P = \mathrm{round}\left( \frac{12\,600}{f} \right)$$
+
+Exemples de correspondances :
+| Note | Fréquence | Période $P$ | Période hexadécimale |
+| :---: | :---: | :---: | :---: |
+| **Do 3 (C3)** | 130,8 Hz | 96 | `$60` |
+| **Fa 3 (F3)** | 174,6 Hz | 72 | `$48` |
+| **Sol 3 (G3)** | 196,0 Hz | 64 | `$40` |
+| **Do 4 (C4)** | 261,6 Hz | 48 | `$30` |
+| **Ré 4 (D4)** | 293,7 Hz | 43 | `$2B` |
+| **Mi♭ 4 (Eb4)**| 311,1 Hz | 40 | `$28` |
+| **Fa 4 (F4)** | 349,2 Hz | 36 | `$24` |
+| **Sol 4 (G4)** | 392,0 Hz | 32 | `$20` |
+| **La 4 (A4)** | 440,0 Hz | 29 | `$1D` |
+| **Si♭ 4 (Bb4)**| 466,2 Hz | 27 | `$1B` |
+| **Si 4 (B4)** | 493,9 Hz | 26 | `$1A` |
+| **Do 5 (C5)** | 523,3 Hz | 24 | `$18` |
+
+Format d'un événement musical (3 octets) :
+1. `DURÉE` : Décompte en unités de ~20,2 ms ($256 \times 79\text{ cycles}$).
+2. `PÉRIODE_V1` : Période de la voix 1 ($0 = \text{silence}$).
+3. `PÉRIODE_V2` : Période de la voix 2 ($0 = \text{silence}$).
+4. Fin de partition : `.byte $00, $00, $00`.
+
+---
+
+## 🎹 5. Les Œuvres Embarquées
+
+Le programme `bach.asm` embarque désormais un véritable juke-box contrapuntique à deux voix réelles :
+
+### 1. J.S. Bach — Fuga II en Do mineur (BWV 847)
+Issue du Livre 1 du *Clavecin bien tempéré* (1722) :
+* 154 événements musicaux à 2 voix découpés tranche par tranche.
+* Entrée solennelle du Sujet à l'Alto (mesures 1-2).
+* Entrée triomphale du Soprano à la quinte (mesures 3-5) pendant que l'Alto déroule le contre-sujet virtuose en doubles croches ininterrompues.
+* Épisode contrapuntique à deux voix en marches d'harmonie descendantes.
+
+### 2. The Beatles — Hey Jude (Paul McCartney, 1968)
+Le chef-d'œuvre universellement célébré des Beatles (single Apple Records) :
+* **17 mesures complètes** à ~95 BPM (43 secondes de musique).
+* **Tonalité originale** : Fa majeur (F, C, C7, Bb).
+* **Voix 1 (Chant Lead)** :
+  - L'introduction vocale légendaire de Paul McCartney (*« Hey Jude, don't make it bad / Take a sad song and make it better... »*).
+  - Deuxième partie du couplet (*« Remember to let her into your heart / Then you can start to make it better »*).
+  - L'apothéose du Chœur final : le célébrissime refrain universel (*« Naaaa, na, na, na-na-na-na, na-na-na-na, Hey Jude! »*) avec les envolées aiguës caractéristiques de Paul McCartney jusqu'au Fa5 !
+* **Voix 2 (Piano & Basse)** :
+  - Les accords arpégés et la ligne de basse descendante au piano (Fa, Do, Do7, Si♭).
+  - La progression d'accords mythique du final en Fa – Mi♭ – Si♭ – Fa.
+
+### 3. The Beatles — Let It Be (Paul McCartney, 1970)
+L'hymne gospel-rock inoubliable des Beatles :
+* **12 mesures complètes** à ~83 BPM (34 secondes de musique).
+* **Tonalité originale** : Do majeur (C, G, Am, F).
+* **Voix 1 (Chant)** :
+  - Couplet complet (*« When I find myself in times of trouble, Mother Mary comes to me... »*).
+  - Refrain magistral (*« Let it be, let it be, whisper words of wisdom, let it be... »*).
+* **Voix 2 (Piano d'accompagnement)** :
+  - La fameuse progression descendante au piano en Do – Sol/Si – La mineur – Fa majeur.
+
+### 4. The Beatles — I Want You (She's So Heavy) (John Lennon, 1969)
+Le riff proto-heavy metal / blues-rock mythique d'*Abbey Road* :
+* **16 mesures complètes** en 6/8 (~38 secondes de musique).
+* **Tonalité originale** : Ré mineur (Dm, Dm/E, F6, E7♭9, B♭7, A7).
+* **Voix 1 (Guitare Arpège & Chant Blues)** :
+  - L'arpège gothique légendaire en Ré mineur.
+  - Le chant habité de John Lennon (*« I want you, I want you so bad... She's so... HEAVY! »*).
+* **Voix 2 (Riff Lourd & Basse)** :
+  - La descente chromatique pesante et hypnotique qui a inspiré le doom metal et le hard rock.
+
+---
+
+## 🚀 6. Utilisation & Compilation
+
+### Compilation avec 64tass
+```bash
+64tass --cbm-prg -o bach.bin bach.asm
+```
+
+### Installation sur la disquette DOS 3.3
+Le script racine reconstruit la disquette `AI-ASM.DSK` :
+```bash
+python make_ai_asm.py
+```
+
+### Exécution sur Apple II / Émulateur (AppleWin, MAME, Virtual ][)
+1. Insérer `AI-ASM.DSK` dans le lecteur 1.
+2. Démarrer l'ordinateur (le menu DOS 3.3 s'affiche).
+3. Taper :
+   ```basic
+   BRUN BACH
+   ```
+4. Menu interactif :
+   * Touche **`1`** : J.S. Bach — *Fugue II en Do mineur* (BWV 847)
+   * Touche **`2`** : The Beatles — *Hey Jude* (1968)
+   * Touche **`3`** : The Beatles — *Let It Be* (1970)
+   * Touche **`4`** : The Beatles — *I Want You (She's So Heavy)* (1969)
+   * Touche **`Q`** : Quitter proprement vers DOS 3.3.
+   * Pendant la lecture : **n'importe quelle touche** interrompt instantanément la musique et revient au menu principal sans plantage.

@@ -30,6 +30,7 @@ GAMES = [
     (os.path.join("snake", "snake-txt.asm"),         os.path.join("snake", "snake-txt.bin"),         "SNAKE-TXT",   0x4000, "SNAKE TEXTE (40x24)"),
     (os.path.join("snake", "snake_kimi.asm"),        os.path.join("snake", "snake_kimi.bin"),        "SNAKE-KIMI",  0x6000, "SNAKE ACCELERATION (KIMI)"),
     (os.path.join("1000bornes", "1000bornes.asm"),   os.path.join("1000bornes", "1000bornes.bin"),   "BORNES",      0x4000, "1000 BORNES (MO5 1985)"),
+    (os.path.join("musique", "bach.asm"),            os.path.join("musique", "bach.bin"),            "BACH",        0x4000, "JUKEBOX 2 VOIX (BACH & BEATLES)"),
     ("pi.asm",                                       "pi.bin",                                       "PI",          0x0800, "CALCUL DE PI (4000 DEC.)")
 ]
 
@@ -121,9 +122,10 @@ def build_disk():
         '145 VTAB 16: HTAB 3: PRINT "B. 1000 BORNES (MO5 1985)"\n'
         '147 VTAB 17: HTAB 3: PRINT "S. SNAKE 2-LIGNES (BASIC)"\n'
         '150 VTAB 18: HTAB 3: PRINT "P. CALCUL DE PI (4000 DEC.)"\n'
+        '155 VTAB 19: HTAB 3: PRINT "M. JUKEBOX 2 VOIX (BACH & BEATLES)"\n'
         '160 VTAB 20: HTAB 3: PRINT "Q. QUITTER VERS LE PROMPT DOS"\n'
         '170 VTAB 21: HTAB 3: PRINT "--------------------------------"\n'
-        '180 VTAB 22: HTAB 3: PRINT "VOTRE CHOIX [1-9, A, B, S, P, Q] : ";\n'
+        '180 VTAB 22: HTAB 3: PRINT "VOTRE CHOIX [1-9, A, B, S, P, M, Q] : ";\n'
         '190 GET A$: PRINT A$\n'
         '200 IF A$ = "1" THEN PRINT CHR$(4);"BRUN INVADERS"\n'
         '210 IF A$ = "2" THEN PRINT CHR$(4);"BRUN FLAPPY"\n'
@@ -138,6 +140,7 @@ def build_disk():
         '295 IF A$ = "B" OR A$ = "b" THEN PRINT CHR$(4);"BRUN BORNES"\n'
         '297 IF A$ = "S" OR A$ = "s" THEN PRINT CHR$(4);"RUN SNAKE_2L"\n'
         '300 IF A$ = "P" OR A$ = "p" THEN PRINT CHR$(4);"BRUN PI"\n'
+        '305 IF A$ = "M" OR A$ = "m" OR A$ = "F" OR A$ = "f" THEN PRINT CHR$(4);"BRUN BACH"\n'
         '310 IF A$ = "Q" OR A$ = "q" THEN TEXT : HOME : END\n'
         '320 GOTO 180\n'
     )
