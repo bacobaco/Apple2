@@ -107,10 +107,10 @@ Ces créations combinent les contraintes matérielles d'époque (1 MHz, 48 Ko / 
   - **Contrôles interactifs** : Menu de sélection (`1` à `4`), interruption / retour au menu par n'importe quelle touche, et sortie propre vers DOS 3.3 (`Q`).
 
 ---
-
-### 9. 🔬 Expérimentations & Démonstrateurs
-* [`pi.asm`](file:///pi.asm) : Moteur de calcul haute précision des décimales du nombre $\pi$ en 6502 (jusqu'à 4000 décimales).
-* [`digits.asm`](file:///digits.asm) : Polices et affichage numérique vectoriel/bitmap HGR.
+### 9. 🥧 Calculateur de $\pi$ en Streaming Sans Fin (Spigot LFT de Gibbons)
+* **Dossier du projet** : [`pi/`](file:///pi/) (Documentation détaillée : [`pi/README.md`](file:///pi/README.md))
+* **Version Apple II 6502** : [`pi.asm`](file:///pi/pi.asm) implanté en `$1000` (alloue dynamiquement 32 Ko de RAM de `$1000` à `$9000`), avec pause interactive sur toute touche et retour propre par `RTS` au menu `HELLO` sur `[ESC]`.
+* **Version PC Moderne** : [`pi_stream.py`](file:///pi/pi_stream.py) & [`run_pi.bat`](file:///pi/run_pi.bat) exploitant **32 cœurs CPU** et le GPU **NVIDIA GeForce RTX 5080 (CUDA)** à **95%+ de charge**, générant jusqu'à 76 000 décimales/seconde avec cockpit télémétrique ANSI HUD, analyse spectrale d'entropie de Shannon et test statistique d'uniformité $\chi^2$.
 
 ---
 
@@ -174,7 +174,7 @@ BRUN SNAKE-TXT
 BRUN SNAKE-KIMI
 BRUN SNAKE
 RUN SNAKE_2L
-BRUN PI
+BLOAD PI: CALL 4096
 BRUN BACH
 ```
 
