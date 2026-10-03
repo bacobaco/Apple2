@@ -31,7 +31,9 @@ GAMES = [
     (os.path.join("snake", "snake_kimi.asm"),        os.path.join("snake", "snake_kimi.bin"),        "SNAKE-KIMI",  0x6000, "SNAKE ACCELERATION (KIMI)"),
     (os.path.join("1000bornes", "1000bornes.asm"),   os.path.join("1000bornes", "1000bornes.bin"),   "BORNES",      0x4000, "1000 BORNES (MO5 1985)"),
     (os.path.join("musique", "bach.asm"),            os.path.join("musique", "bach.bin"),            "BACH",        0x4000, "JUKEBOX 2 VOIX (BACH & BEATLES)"),
-    (os.path.join("pi", "pi.asm"),                   os.path.join("pi", "pi.bin"),                   "PI",          0x1000, "CALCUL DE PI (STREAMING CONTINU)")
+    (os.path.join("pi", "pi.asm"),                   os.path.join("pi", "pi.bin"),                   "PI",          0x1000, "CALCUL DE PI (STREAMING CONTINU)"),
+    (os.path.join("pang!", "pang.asm"),              os.path.join("pang!", "pang.bin"),              "PANG",        0x6000, "PANG! ARCADE (1989 HGR)"),
+    ("joytest.asm",                                  "joytest.bin",                                  "JOYTEST",     0x6000, "TEST JOYSTICK (4 DIRECTIONS)")
 ]
 
 DSK_NAME = "AI-ASM.DSK"
@@ -52,9 +54,9 @@ def build_disk():
     # 2. Initialize clean DOS 3.3 disk from bootable template
     print("Formatting clean DOS 3.3 disk...")
     template_candidates = [
-        os.path.join("scratch", "MASTER.DSK"),
         "MASTER.DSK",
-        "AI-ASM.DSK"
+        os.path.join(r"D:\Emulateurs\AppleWin", "Apple_DOS_3.3_Master.dsk"),
+        os.path.join("scratch", "MASTER.DSK"),
     ]
     template_path = next((p for p in template_candidates if os.path.exists(p)), None)
     if not template_path:
@@ -68,15 +70,19 @@ def build_disk():
     dos_len = 3 * bas2dsk.TRACK_SIZE
     new_disk[:dos_len] = master_disk[:dos_len]
 
-    # Initialize VTOC at Track 17, Sector 0
+    # Initialize VTOC at Track 17, Sector 0 (Standard Apple DOS 3.3)
     vtoc = bytearray(256)
-    vtoc[0x01] = 17  # first catalog track
-    vtoc[0x02] = 15  # first catalog sector
-    vtoc[0x03] = 3   # DOS 3.3
-    vtoc[0x27] = 122
-    vtoc[0x30] = 35
-    vtoc[0x31] = 16
-    struct.pack_into("<H", vtoc, 0x32, 256)
+    vtoc[0x00] = 0x04  # standard DOS 3.3 signature byte
+    vtoc[0x01] = 17    # first catalog track ($11)
+    vtoc[0x02] = 15    # first catalog sector ($0F)
+    vtoc[0x03] = 3     # DOS 3.3 release number
+    vtoc[0x06] = 254   # Disk volume number ($FE = 254)
+    vtoc[0x27] = 122   # Max T/S pairs per sector ($7A)
+    vtoc[0x30] = 18    # Last track where allocation was made
+    vtoc[0x31] = 1     # Direction of track allocation
+    vtoc[0x34] = 35    # Number of tracks per diskette (offset $34 = 52)
+    vtoc[0x35] = 16    # Number of sectors per track (offset $35 = 53)
+    struct.pack_into("<H", vtoc, 0x36, 256)  # Bytes per sector (offset $36 = 54)
 
     # Mark all tracks 3..34 as completely free (16 bits set)
     for t in range(35):
@@ -120,12 +126,13 @@ def build_disk():
         '130 VTAB 14: HTAB 3: PRINT "9. SNAKE TEXTE (40x24)"\n'
         '140 VTAB 15: HTAB 3: PRINT "A. SNAKE ACCELERATION (KIMI)"\n'
         '145 VTAB 16: HTAB 3: PRINT "B. 1000 BORNES (MO5 1985)"\n'
-        '147 VTAB 17: HTAB 3: PRINT "S. SNAKE 2-LIGNES (BASIC)"\n'
-        '150 VTAB 18: HTAB 3: PRINT "P. CALCUL DE PI (STREAMING CONTINU)"\n'
-        '155 VTAB 19: HTAB 3: PRINT "M. JUKEBOX 2 VOIX (BACH & BEATLES)"\n'
-        '160 VTAB 20: HTAB 3: PRINT "Q. QUITTER VERS LE PROMPT DOS"\n'
-        '170 VTAB 21: HTAB 3: PRINT "--------------------------------"\n'
-        '180 VTAB 22: HTAB 3: PRINT "VOTRE CHOIX [1-9, A, B, S, P, M, Q] : ";\n'
+        '147 VTAB 17: HTAB 3: PRINT "J. TEST JOYSTICK (4 DIRECTIONS)"\n'
+        '150 VTAB 18: HTAB 3: PRINT "P. PANG! ARCADE (1989 HGR)"\n'
+        '152 VTAB 19: HTAB 3: PRINT "C. CALCUL DE PI (STREAMING)"\n'
+        '155 VTAB 20: HTAB 3: PRINT "M. JUKEBOX 2 VOIX (BACH)"\n'
+        '160 VTAB 21: HTAB 3: PRINT "Q. QUITTER VERS LE PROMPT DOS"\n'
+        '170 VTAB 22: HTAB 3: PRINT "--------------------------------"\n'
+        '180 VTAB 23: HTAB 3: PRINT "VOTRE CHOIX : ";\n'
         '190 GET A$: PRINT A$\n'
         '200 IF A$ = "1" THEN PRINT CHR$(4);"BRUN INVADERS"\n'
         '210 IF A$ = "2" THEN PRINT CHR$(4);"BRUN FLAPPY"\n'
@@ -138,8 +145,9 @@ def build_disk():
         '280 IF A$ = "9" THEN PRINT CHR$(4);"BRUN SNAKE-TXT"\n'
         '290 IF A$ = "A" OR A$ = "a" THEN PRINT CHR$(4);"BRUN SNAKE-KIMI"\n'
         '295 IF A$ = "B" OR A$ = "b" THEN PRINT CHR$(4);"BRUN BORNES"\n'
-        '297 IF A$ = "S" OR A$ = "s" THEN PRINT CHR$(4);"RUN SNAKE_2L"\n'
-        '300 IF A$ = "P" OR A$ = "p" THEN PRINT CHR$(4);"BLOAD PI": CALL 4096\n'
+        '297 IF A$ = "J" OR A$ = "j" THEN PRINT CHR$(4);"BRUN JOYTEST"\n'
+        '300 IF A$ = "P" OR A$ = "p" THEN PRINT CHR$(4);"BRUN PANG"\n'
+        '302 IF A$ = "C" OR A$ = "c" THEN PRINT CHR$(4);"BLOAD PI": CALL 4096\n'
         '305 IF A$ = "M" OR A$ = "m" OR A$ = "F" OR A$ = "f" THEN PRINT CHR$(4);"BRUN BACH"\n'
         '310 IF A$ = "Q" OR A$ = "q" THEN TEXT : HOME : END\n'
         '320 GOTO 10\n'
@@ -163,17 +171,7 @@ def build_disk():
         bas2dsk.write_file_to_dsk(DSK_NAME, cat_name, dos_bin_data, 0x04)
         print(f"  Installed '{cat_name}' (Addr: ${addr:04X}, Length: {len(raw_data)} bytes)")
 
-    # Install aliases 'MILLEBORNES' and 'MBORNES' -> BORNES ($4000)
-    bornes_bin = os.path.join("1000bornes", "1000bornes.bin")
-    if os.path.exists(bornes_bin):
-        with open(bornes_bin, "rb") as f:
-            b_raw = f.read()
-        if len(b_raw) >= 2 and b_raw[0] == 0x00 and b_raw[1] == 0x40:
-            b_raw = b_raw[2:]
-        b_dos_data = struct.pack("<HH", 0x4000, len(b_raw)) + b_raw
-        bas2dsk.write_file_to_dsk(DSK_NAME, "MILLEBORNES", b_dos_data, 0x04)
-        bas2dsk.write_file_to_dsk(DSK_NAME, "MBORNES", b_dos_data, 0x04)
-        print("  Installed aliases 'MILLEBORNES' and 'MBORNES' -> BORNES ($4000)")
+    # Note: 'MILLEBORNES' and 'MBORNES' redundant copies removed to free 130 sectors
 
     # Install alias 'SNAKE' -> SNAKE-TXT ($4000)
     snake_txt_bin = os.path.join("snake", "snake-txt.bin")

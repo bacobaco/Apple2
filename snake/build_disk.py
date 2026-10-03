@@ -116,13 +116,17 @@ def create_snake_disk():
 
     # VTOC
     vtoc = bytearray(256)
+    vtoc[0x00] = 0x04
     vtoc[0x01] = 17
     vtoc[0x02] = 15
     vtoc[0x03] = 3
+    vtoc[0x06] = 254
     vtoc[0x27] = 122
-    vtoc[0x30] = 35
-    vtoc[0x31] = 16
-    struct.pack_into("<H", vtoc, 0x32, 256)
+    vtoc[0x30] = 18
+    vtoc[0x31] = 1
+    vtoc[0x34] = 35
+    vtoc[0x35] = 16
+    struct.pack_into("<H", vtoc, 0x36, 256)
 
     for t in range(35):
         off = 0x38 + t * 4
