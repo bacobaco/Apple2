@@ -32,8 +32,7 @@ GAMES = [
     (os.path.join("1000bornes", "1000bornes.asm"),   os.path.join("1000bornes", "1000bornes.bin"),   "BORNES",      0x4000, "1000 BORNES (MO5 1985)"),
     (os.path.join("musique", "bach.asm"),            os.path.join("musique", "bach.bin"),            "BACH",        0x4000, "JUKEBOX 2 VOIX (BACH & BEATLES)"),
     (os.path.join("pi", "pi.asm"),                   os.path.join("pi", "pi.bin"),                   "PI",          0x1000, "CALCUL DE PI (STREAMING CONTINU)"),
-    (os.path.join("pang!", "pang.asm"),              os.path.join("pang!", "pang.bin"),              "PANG",        0x6000, "PANG! ARCADE (1989 HGR)"),
-    ("joytest.asm",                                  "joytest.bin",                                  "JOYTEST",     0x6000, "TEST JOYSTICK (4 DIRECTIONS)")
+    (os.path.join("pang!", "pang.asm"),              os.path.join("pang!", "pang.bin"),              "PANG",        0x6000, "PANG! ARCADE (1989 HGR)")
 ]
 
 DSK_NAME = "AI-ASM.DSK"
@@ -126,7 +125,7 @@ def build_disk():
         '130 VTAB 14: HTAB 3: PRINT "9. SNAKE TEXTE (40x24)"\n'
         '140 VTAB 15: HTAB 3: PRINT "A. SNAKE ACCELERATION (KIMI)"\n'
         '145 VTAB 16: HTAB 3: PRINT "B. 1000 BORNES (MO5 1985)"\n'
-        '147 VTAB 17: HTAB 3: PRINT "J. TEST JOYSTICK (4 DIRECTIONS)"\n'
+        '147 VTAB 17: HTAB 3: PRINT "S. SNAKE 2-LIGNES (BASIC)"\n'
         '150 VTAB 18: HTAB 3: PRINT "P. PANG! ARCADE (1989 HGR)"\n'
         '152 VTAB 19: HTAB 3: PRINT "C. CALCUL DE PI (STREAMING)"\n'
         '155 VTAB 20: HTAB 3: PRINT "M. JUKEBOX 2 VOIX (BACH)"\n'
@@ -145,7 +144,7 @@ def build_disk():
         '280 IF A$ = "9" THEN PRINT CHR$(4);"BRUN SNAKE-TXT"\n'
         '290 IF A$ = "A" OR A$ = "a" THEN PRINT CHR$(4);"BRUN SNAKE-KIMI"\n'
         '295 IF A$ = "B" OR A$ = "b" THEN PRINT CHR$(4);"BRUN BORNES"\n'
-        '297 IF A$ = "J" OR A$ = "j" THEN PRINT CHR$(4);"BRUN JOYTEST"\n'
+        '297 IF A$ = "S" OR A$ = "s" THEN PRINT CHR$(4);"RUN SNAKE_2L"\n'
         '300 IF A$ = "P" OR A$ = "p" THEN PRINT CHR$(4);"BRUN PANG"\n'
         '302 IF A$ = "C" OR A$ = "c" THEN PRINT CHR$(4);"BLOAD PI": CALL 4096\n'
         '305 IF A$ = "M" OR A$ = "m" OR A$ = "F" OR A$ = "f" THEN PRINT CHR$(4);"BRUN BACH"\n'

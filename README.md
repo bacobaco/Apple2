@@ -127,18 +127,6 @@ Ces créations combinent les contraintes matérielles d'époque (1 MHz, 48 Ko / 
 
 ---
 
-### 11. 🕹️ JOYTEST (Diagnostic Interactif 4 Directions & Boutons)
-* **Fichier source** : [`joytest.asm`](file:///joytest.asm) implanté en `$6000`.
-* **Mode d'affichage** : Mode Texte 40×24 haute clarté.
-* **Fonctionnalités** :
-  - Mesure et affiche en direct les valeurs de résistance des potentiomètres `P0` (Axe X) et `P1` (Axe Y) de 0 à 255.
-  - Identification automatique des 4 positions : `[ GAUCHE ]`, `[ DROITE ]`, `[ HAUT ]`, `[ BAS ]` et `[ CENTRE ]`.
-  - État des Boutons 0 et 1 (`RELACHE` / `APPUYE`).
-  - **Boussole 2D temps réel** affichant le vecteur d'inclinaison physique du joystick.
-  - Quitter avec `[ESC]` ou `[Q]` pour revenir proprement au menu DOS.
-
----
-
 ## 🛠️ Boîte à Outils & Workflow Python
 
 Le projet inclut une suite d'utilitaires Python pour faciliter le cycle de développement :
@@ -202,7 +190,6 @@ RUN SNAKE_2L
 BLOAD PI: CALL 4096
 BRUN BACH
 BRUN PANG
-BRUN JOYTEST
 ```
 
 ---
