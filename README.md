@@ -169,8 +169,35 @@ Vérification du catalogue :
 python list_cat.py AI-ASM.DSK
 ```
 
+---
+
+### 🎂 Disquette Spéciale Anniversaire : `ANNIVERSAIRE.DSK` (Autonome & Protégée)
+Une disquette bootable spéciale créée comme cadeau surprise pour "Grand Frère" :
+* **Dossier du projet** : [`anniversaire/`](file:///anniversaire/) (Documentation complète : [`anniversaire/README.md`](file:///anniversaire/README.md))
+* **Fichier source** : [`anniversaire/birthday.asm`](file:///anniversaire/birthday.asm)
+* **Génération** :
+  ```bash
+  python anniversaire/build_birthday_disk.py
+  ```
+* **Caractéristiques** :
+  1. **Intro plein écran en GR couleur (40×48)** avec message `"BON ANNIV' GRAND FRERE !"` rendu en police 3×5 haute lisibilité.
+  2. **Gâteau d'anniversaire animé** : 2 étages avec glaçage fraise/chocolat, bougies rayées, plat argenté et flammes vacillantes à 3 phases.
+  3. **Animations festives & protection du décor** :
+     - Pluie de confettis multicolores isolée strictement sur les marges latérales (`X=1..4` et `X=35..38`) pour **ne jamais effacer ni trouer le texte ou le gâteau**.
+     - Rafraîchissement automatique de netteté du texte toutes les 64 frames.
+     - Étoiles scintillantes aux angles de l'écran.
+     - **Mélodie complète de "Joyeux Anniversaire"** (25 notes, 4 phrases musicales) sur le haut-parleur `$C030` avec animation rythmée entre chaque note.
+  4. **Lancement instantané** : Dès qu'une touche est pressée, la musique se coupe instantanément et la disquette charge et lance immédiatement le jeu **Duel d'Artillerie** (`artillerie.bin`) à son point d'entrée `$4000`.
+  5. **Touche Reset verrouillée** : Le vecteur Reset (`$03F2/$03F3` et `$03F4`) est verrouillé, rendant toute tentative d'interruption par Reset inopérante.
+  6. **Disquette impénétrable (DOS Spécial)** :
+     - La commande `CATALOG` est neutralisée dans la table DOS 3.3 (`?SYNTAX ERROR`).
+     - Le jeu principal **Duel d'Artillerie** est stocké en secteurs bruts (Pistes 3..5) sans entrée au catalogue (100% invisible).
+     - Fichiers système de démarrage verrouillés.
+
+---
+
 ### 4. Jouer dans l'émulateur
-Insérez l'image [`AI-ASM.DSK`](file:///AI-ASM.DSK) dans le lecteur 1 de votre émulateur :
+Insérez l'image [`AI-ASM.DSK`](file:///AI-ASM.DSK) ou [`ANNIVERSAIRE.DSK`](file:///anniversaire/ANNIVERSAIRE.DSK) dans le lecteur 1 de votre émulateur :
 - Un menu interactif démarre automatiquement au boot (`HELLO`) et vous permet de sélectionner n'importe quel jeu (`1` à `9`, `A`, `B`, `S`, `P`, `M`).
 - Vous pouvez également lancer directement un jeu depuis le prompt Applesoft `]` :
 ```basic
